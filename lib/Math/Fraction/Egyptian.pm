@@ -8,7 +8,7 @@ our $VERSION = '0.01';
 
 =head1 NAME
 
-Math::Fraction::Egyptian -
+Math::Fraction::Egyptian - construct Egyptian representations of vulgar fractions
 
 =head1 SYNOPSIS
 
