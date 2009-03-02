@@ -2,6 +2,7 @@ package Math::Fraction::Egyptian;
 
 use strict;
 use warnings;
+use POSIX 'ceil';
 
 our $VERSION = '0.01';
 
@@ -56,6 +57,38 @@ sub make_frac {
 
 
 }
+
+=head2 greedy($x,$y)
+
+Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
+
+    x/y =>  1/ceil(y/x) + (-y%x)/(y*ceil(y/x))
+
+The return value 
+
+Example:
+
+    my ($g, $n, $d) = greedy(2,3);
+
+=cut
+
+sub greedy {
+    my ($n,$d) = @_;
+    my $c = ceil( $d / $n );
+    return ($c, (-1 * $d) % $n, $d * $c);
+}
+
+=head2 GCD($x,$y)
+
+Returns the Greatest Common Denominator of C<$x> and C<$y>.
+
+=cut
+
+sub GCD {
+    my ($x, $y) = @_;
+    return ($y) ? GCD($y, $x % $y) : $x;
+}
+
 
 =head1 AUTHOR
 
