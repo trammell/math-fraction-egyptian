@@ -75,7 +75,10 @@ Example:
 sub greedy {
     my ($n,$d) = @_;
     my $c = ceil( $d / $n );
-    return ($c, (-1 * $d) % $n, $d * $c);
+    my $new_n = (-1 * $d) % $n;
+    my $new_d = $d * $c;
+    my $gcd = GCD($new_n, $new_d);
+    return ($c, $new_n / $gcd, $new_d / $gcd);
 }
 
 =head2 GCD($x,$y)
@@ -88,7 +91,6 @@ sub GCD {
     my ($x, $y) = @_;
     return ($y) ? GCD($y, $x % $y) : $x;
 }
-
 
 =head1 AUTHOR
 
