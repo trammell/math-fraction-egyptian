@@ -5,40 +5,41 @@ Egyptian fraction.
 
 RESOURCES
 
-    http://en.wikipedia.org/wiki/Vulgar_fraction
-    http://en.wikipedia.org/wiki/Egyptian_fractions
-    http://en.wikipedia.org/wiki/Rhind_Mathematical_Papyrus
+   http://en.wikipedia.org/wiki/Category:Egyptian_fractions
+   http://en.wikipedia.org/wiki/Vulgar_fraction
+   http://en.wikipedia.org/wiki/Egyptian_fractions
+   http://en.wikipedia.org/wiki/Rhind_Mathematical_Papyrus
+   http://en.wikipedia.org/wiki/RMP_2/n_table
 
 INSTALLATION
 
 To install this module, run the following commands:
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+   perl Makefile.PL
+   make
+   make test
+   make install
 
 SUPPORT AND DOCUMENTATION
 
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc Math::Fraction::Egyptian
+   perldoc Math::Fraction::Egyptian
 
 You can also look for information at:
 
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Math-Fraction-Egyptian
+   RT, CPAN's request tracker
+      http://rt.cpan.org/NoAuth/Bugs.html?Dist=Math-Fraction-Egyptian
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Math-Fraction-Egyptian
+   AnnoCPAN, Annotated CPAN documentation
+      http://annocpan.org/dist/Math-Fraction-Egyptian
 
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Math-Fraction-Egyptian
+   CPAN Ratings
+      http://cpanratings.perl.org/d/Math-Fraction-Egyptian
 
-    Search CPAN
-        http://search.cpan.org/dist/Math-Fraction-Egyptian/
-
+   Search CPAN
+      http://search.cpan.org/dist/Math-Fraction-Egyptian/
 
 COPYRIGHT AND LICENCE
 
