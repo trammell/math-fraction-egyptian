@@ -60,9 +60,30 @@ Converts fraction C<$numerator/$denominator> to its Egyptian representation.
 =cut
 
 sub to_egyptian {
-    my $n = shift;
-    my $d = shift;
+    my $n = int(shift());
+    my $d = int(shift());
     my %attr = @_;
+
+    # if the fraction has a zero numerator, return an empty array
+    if ($n == 0) {
+        return ();
+    }
+
+    if (($n < 1) || ($d < 1)) {
+        warn "Taking absolute value of arguments";
+        $n = abs($n);
+        $d = abs($d);
+    }
+
+    if ($n > $d) {
+        $n %= $d;
+        warn "Calculating expansion of $n/$d";
+    }
+
+    # if the fraction already has a unit numerator, return the denominator
+    if ($n == 1) {
+        return ($d);
+    }
 
     my @e;
 
