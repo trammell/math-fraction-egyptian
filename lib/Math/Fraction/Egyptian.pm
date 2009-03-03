@@ -2,17 +2,24 @@ package Math::Fraction::Egyptian;
 
 use strict;
 use warnings;
+use base 'Exporter';
 use POSIX 'ceil';
+
+our @EXPORT_OK = qw( to_egyptian to_common );
+
+our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 our $VERSION = '0.01';
 
 =head1 NAME
 
-Math::Fraction::Egyptian - construct Egyptian representations of vulgar fractions
+Math::Fraction::Egyptian - construct Egyptian representations of common fractions
 
 =head1 SYNOPSIS
 
-    use Math::Fraction::Egyptian;
+    use Math::Fraction::Egyptian ':all';
+    my @e = to_egyptian(43, 48);  # returns 43/48 in Egyptian format
+    my @v = to_common(2, 3, 16);  # returns 1/2 + 1/3 + 1/16 in common format
 
 =head1 DESCRIPTION
 
@@ -46,16 +53,28 @@ This module implements ...
 
 =head1 FUNCTIONS
 
-=head2 make_frac($numerator, $denominator)
+=head2 to_egyptian($numerator, $denominator)
 
 =cut
 
-sub make_frac {
+sub to_egyptian {
     my ($n,$d) = @_;
 
 
 
 
+}
+
+=head2 to_common(@denominators)
+
+=cut
+
+sub to_common {
+    my ($n,$d) = (0,1);
+    for my $a (@_) {
+        ($n, $d) = simplify($a * $n + $d, $a * $d);
+    }
+    return ($n,$d);
 }
 
 =head2 greedy($x,$y)
@@ -90,6 +109,17 @@ Returns the Greatest Common Denominator of C<$x> and C<$y>.
 sub GCD {
     my ($x, $y) = @_;
     return ($y) ? GCD($y, $x % $y) : $x;
+}
+
+=head2 simplify($x,$y)
+
+
+=cut
+
+sub simplify {
+    my ($n, $d) = @_;
+    my $gcd = GCD($n,$d);
+    return ($n / $gcd, $d / $gcd);
 }
 
 =head1 AUTHOR
