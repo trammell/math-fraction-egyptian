@@ -11,6 +11,9 @@ t/02-greedy.t
 t/03-expand.t
 t/04-to-common.t
 t/10-rhind.t
+t/10-to-egyptian.t
+t/11-to-common.t
+t/20-rhind.t
 t/boilerplate.t
 t/pod-coverage.t
 t/pod.t
