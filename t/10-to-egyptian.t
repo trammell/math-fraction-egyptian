@@ -7,6 +7,10 @@ use Test::More 'no_plan';
 use_ok('Math::Fraction::Egyptian','to_egyptian');
 
 my @tests = (
+    [ 0, 3 ],
+    [ 0, 4 ],
+    [ 1, 3 => 3 ],
+    [ 1, 4 => 4 ],
     [ 43, 48 => 2, 3, 16 ],     # 43/48 = 1/2 + 1/3 + 1/16
 );
 
