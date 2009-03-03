@@ -1,1 +1,6 @@
+blib/
 .gitignore
+.git/
+Makefile$
+MANIFEST.bak
+pm_to_blib
