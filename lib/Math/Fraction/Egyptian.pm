@@ -96,7 +96,7 @@ Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
 
     x/y =>  1/ceil(y/x) + (-y%x)/(y*ceil(y/x))
 
-The return value 
+The return value
 
 Example:
 

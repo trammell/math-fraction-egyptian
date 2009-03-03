@@ -1,12 +1,12 @@
 Math-Fraction-Egyptian
 
-This module implements an algorithm for converting a vulgar fraction into an
+This module implements an algorithm for converting a common fraction into an
 Egyptian fraction.
 
 RESOURCES
 
    http://en.wikipedia.org/wiki/Category:Egyptian_fractions
-   http://en.wikipedia.org/wiki/Vulgar_fraction
+   http://en.wikipedia.org/wiki/Common_fraction
    http://en.wikipedia.org/wiki/Egyptian_fractions
    http://en.wikipedia.org/wiki/Rhind_Mathematical_Papyrus
    http://en.wikipedia.org/wiki/RMP_2/n_table
