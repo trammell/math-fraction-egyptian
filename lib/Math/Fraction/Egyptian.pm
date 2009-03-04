@@ -3,7 +3,6 @@ package Math::Fraction::Egyptian;
 use strict;
 use warnings;
 use base 'Exporter';
-use POSIX 'ceil';
 
 our @EXPORT_OK = qw( to_egyptian to_common );
 
@@ -111,26 +110,6 @@ sub to_common {
     return ($n,$d);
 }
 
-=head2 greedy($x,$y)
-
-Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
-
-    x/y =>  1/ceil(y/x) + (-y%x)/(y*ceil(y/x))
-
-The return value
-
-Example:
-
-    my ($g, $n, $d) = greedy(2,3);
-
-=cut
-
-sub greedy {
-    my ($n,$d) = @_;
-    my $e = ceil( $d / $n );
-    ($n, $d) = simplify((-1 * $d) % $n, $d * $e);
-    return ($e, $n, $d);
-}
 
 =head2 GCD($x,$y)
 
@@ -157,17 +136,40 @@ sub simplify {
     return ($n / $gcd, $d / $gcd);
 }
 
+=head2 is_practical($n)
+
+Returns a true value if C<$n> is a practical number.
+
+=cut
+
 sub is_practical {
     my $n = shift;
+    return unless $n % 2 == 0;
+    my @f = _factors($n);
+    return unless @f;
+
 
 }
 
-sub factors {
+# returns a list of (prime, multiplicity) pairs for the input value
+sub _factors {
     my $n = shift;
-
+    my @primes = _primes()
+    my %f;
+    for my $i (0 .. $#primes) {
+        my $p = $primes[$i];
+        while ($n % $p == 0) {
+            $f{$p}++;
+            $n /= $p;
+        }
+        last if $n == 1;
+    }
+    return unless $n == 1;
+    return map [$_, $f{$_}], sort { $a <=> $b } keys %f;
 }
 
-sub primes {
+# returns a list of all prime numbers below 2000
+sub _primes {
     return qw(
         2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
         101 103 107 109 113 127 131 137 139 149 151 157 163 167 173 179 181 191
@@ -189,6 +191,40 @@ sub primes {
         1823 1831 1847 1861 1867 1871 1873 1877 1879 1889 1901 1907 1913 1931
         1933 1949 1951 1973 1979 1987 1993 1997 1999
     );
+}
+
+package Math::Fraction::Egyptian::Strategy;
+
+sub suitable { 0; }
+
+
+package Math::Fraction::Egyptian::Strategy::Greedy;
+use base 'Math::Fraction::Egyptian::Strategy';
+use POSIX 'ceil';
+
+Math::Fraction::Egyptian->add_strategy(__PACKAGE__);
+
+=head2 greedy($x,$y)
+
+Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
+
+    x/y =>  1/ceil(y/x) + (-y%x)/(y*ceil(y/x))
+
+The return value
+
+Example:
+
+    my ($g, $n, $d) = greedy(2,3);
+
+=cut
+
+sub suitable { 1 }
+
+sub greedy {
+    my ($n,$d) = @_;
+    my $e = ceil( $d / $n );
+    ($n, $d) = simplify((-1 * $d) % $n, $d * $e);
+    return ($e, $n, $d);
 }
 
 =head1 AUTHOR
