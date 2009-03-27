@@ -22,7 +22,7 @@ Math::Fraction::Egyptian - construct Egyptian representations of common fraction
 
 =head1 DESCRIPTION
 
-From L<wikipedia|http://en.wikipedia.org/wiki/Egyptian_fractions>:
+From L<Wikipedia|http://en.wikipedia.org/wiki/Egyptian_fractions>:
 
 =over 4
 
@@ -50,87 +50,108 @@ historical studies of ancient mathematics.
 
 This module implements ...
 
+
+
+
 =head1 FUNCTIONS
 
-=head2 to_egyptian($numerator, $denominator, %attr)
+=head2 to_egyptian($numer, $denom, %attr)
 
-Converts fraction C<$numerator/$denominator> to its Egyptian representation.
+Converts fraction C<$numer/$denom> to its Egyptian representation.
+
+Example:
 
 =cut
 
 sub to_egyptian {
-    my $n = int(shift());
-    my $d = int(shift());
-    my %attr = @_;
+    my ($n,$d,%attr) = @_;
+    ($n,$d) = (int($n), int($d));
 
-    # if the fraction has a zero numerator, return an empty array
-    if ($n == 0) {
-        return ();
-    }
-
-    if (($n < 1) || ($d < 1)) {
-        warn "Taking absolute value of arguments";
+    # force numerator, denominator to be positive
+    if ($n < 0) {
+        warn "Taking absolute value of numerator";
         $n = abs($n);
+    }
+    if ($d < 0) {
+        warn "Taking absolute value of denominator";
         $d = abs($d);
     }
 
+    # handle improper fractions
     if ($n > $d) {
-        $n %= $d;
-        warn "Calculating expansion of $n/$d";
+        my $n2 = $n % $d;
+        warn "$n/$d is an improper fraction; expanding $n2/$d instead";
+        $n = $n2;
     }
 
-    # if the fraction already has a unit numerator, return the denominator
-    if ($n == 1) {
-        return ($d);
-    }
+    # perform the expansion...
 
-    my @e;
+    my @egypt;
 
-    while (1) {
-        if ($n == 1) {
-            push @e, $d;
-            last;
+    while ($n != 0) {
+        STRATEGY:
+        for my $s (strategies()) {
+            my @result = eval {
+                local $SIG{'__DIE__'} = undef;
+                $s->($n,$d);
+            };
+            if ($@) {
+                next STRATEGY;
+            }
+            else {
+                ($n,$d) = @result[0,1];
+                push @egypt, $result[2];
+                last STRATEGY;
+            }
         }
-        (my $term, $n, $d) = greedy($n,$d);
-        push @e, $term;
     }
 
-    return @e;
+    return @egypt;
 }
 
+
 =head2 to_common(@denominators)
+
+Converts an Egyptian fraction into a common fraction.
+
+Example:
+
+    # determine 1/2 + 1/3 + 1/4 + 1/5
+    my ($numer,$denom) = to_common(2,3,4,5);
 
 =cut
 
 sub to_common {
     my ($n,$d) = (0,1);
     for my $a (@_) {
-        ($n, $d) = simplify($a * $n + $d, $a * $d);
+        ($n, $d) = reduce($a * $n + $d, $a * $d);
     }
     return ($n,$d);
 }
 
-
 =head2 GCD($x,$y)
 
-Returns the Greatest Common Denominator of C<$x> and C<$y>.
+Uses Euclid's algorithm to determine the greatest common denominator ("GCD") of
+C<$x> and C<$y>.  Returns the GCD.
 
 =cut
 
 sub GCD {
-    my ($x, $y) = @_;
+    my ($x, $y) = (int($_[0]), int($_[1]));
     return ($y) ? GCD($y, $x % $y) : $x;
 }
 
-=head2 simplify($x,$y)
+=head2 reduce($n,$d)
+
+Reduces fraction C<$n/$d> to simplest terms.
 
 Example:
 
-    my @x = simplify(100,25);   # @x is now (4,1)
+    my @x = reduce(100,25);   # @x is now (4,1)
 
 =cut
 
-sub simplify {
+sub reduce {
     my ($n, $d) = @_;
     my $gcd = GCD($n,$d);
     return ($n / $gcd, $d / $gcd);
@@ -147,14 +168,12 @@ sub is_practical {
     return unless $n % 2 == 0;
     my @f = _factors($n);
     return unless @f;
-
-
 }
 
 # returns a list of (prime, multiplicity) pairs for the input value
 sub _factors {
     my $n = shift;
-    my @primes = _primes()
+    my @primes = _primes();
     my %f;
     for my $i (0 .. $#primes) {
         my $p = $primes[$i];
@@ -168,7 +187,7 @@ sub _factors {
     return map [$_, $f{$_}], sort { $a <=> $b } keys %f;
 }
 
-# returns a list of all prime numbers below 2000
+# returns a list of all prime numbers below 1000
 sub _primes {
     return qw(
         2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97
@@ -180,51 +199,86 @@ sub _primes {
         641 643 647 653 659 661 673 677 683 691 701 709 719 727 733 739 743 751
         757 761 769 773 787 797 809 811 821 823 827 829 839 853 857 859 863 877
         881 883 887 907 911 919 929 937 941 947 953 967 971 977 983 991 997
-        1009 1013 1019 1021 1031 1033 1039 1049 1051 1061 1063 1069 1087 1091
-        1093 1097 1103 1109 1117 1123 1129 1151 1153 1163 1171 1181 1187 1193
-        1201 1213 1217 1223 1229 1231 1237 1249 1259 1277 1279 1283 1289 1291
-        1297 1301 1303 1307 1319 1321 1327 1361 1367 1373 1381 1399 1409 1423
-        1427 1429 1433 1439 1447 1451 1453 1459 1471 1481 1483 1487 1489 1493
-        1499 1511 1523 1531 1543 1549 1553 1559 1567 1571 1579 1583 1597 1601
-        1607 1609 1613 1619 1621 1627 1637 1657 1663 1667 1669 1693 1697 1699
-        1709 1721 1723 1733 1741 1747 1753 1759 1777 1783 1787 1789 1801 1811
-        1823 1831 1847 1861 1867 1871 1873 1877 1879 1889 1901 1907 1913 1931
-        1933 1949 1951 1973 1979 1987 1993 1997 1999
     );
 }
 
-package Math::Fraction::Egyptian::Strategy;
+my %PRIMES = map { $_ => 1 } _primes();
 
-sub suitable { 0; }
+=head1 STRATEGIES
 
-
-package Math::Fraction::Egyptian::Strategy::Greedy;
-use base 'Math::Fraction::Egyptian::Strategy';
-use POSIX 'ceil';
-
-Math::Fraction::Egyptian->add_strategy(__PACKAGE__);
-
-=head2 greedy($x,$y)
-
-Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
-
-    x/y =>  1/ceil(y/x) + (-y%x)/(y*ceil(y/x))
-
-The return value
-
-Example:
-
-    my ($g, $n, $d) = greedy(2,3);
 
 =cut
 
-sub suitable { 1 }
+=head2 strategies()
 
-sub greedy {
+Returns ...
+
+=cut
+
+sub strategies {
+    return (
+        &strat_trivial,
+        &strat_small_prime,
+        &strat_greedy,
+    );
+}
+
+=head2 strat_trivial($n,$d)
+
+
+=cut
+
+sub strat_trivial {
+    my ($n,$d) = @_;
+    if (defined($n) && $n == 1) {
+        return (0,1,$d);
+    }
+    else {
+        die "unsuitable strategy";
+    }
+}
+
+=head2 strat_small_prime($n,$d)
+
+For small odd prime denominators p, use the expansion:
+
+    2/p = 2/(p + 1) + 2/p(p + 1)
+
+=cut
+
+sub strat_small_prime {
+    my ($n,$d) = @_;
+    if ($n == 2 && $d > 2 && $d < 50 && $PRIMES{$d}) {
+        return (2, $d * ($d + 1), ($d + 1) / 2 );
+    }
+    else {
+        die "unsuitable strategy";
+    }
+}
+
+=head2 strat_greedy($n,$d)
+
+Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
+
+    n/d =>  1/ceil(d/n) + (-d%n)/(d*ceil(d/n))
+
+The function returns a list of three integers: the new numerator, the new
+denominator, and the next calculated value in the Egyptian expansion.
+
+Example:
+
+    # calculate the next term in the greedy expansion of 2/7
+
+    my ($n,$d,$e) = greedy(2,7);
+
+=cut
+
+sub strat_greedy {
+    use POSIX 'ceil';
     my ($n,$d) = @_;
     my $e = ceil( $d / $n );
-    ($n, $d) = simplify((-1 * $d) % $n, $d * $e);
-    return ($e, $n, $d);
+    ($n, $d) = reduce((-1 * $d) % $n, $d * $e);
+    return ($n, $d, $e);
 }
 
 =head1 AUTHOR
