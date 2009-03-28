@@ -217,9 +217,9 @@ Returns ...
 
 sub strategies {
     return (
-        &strat_trivial,
-        &strat_small_prime,
-        &strat_greedy,
+        \&strat_trivial,
+        \&strat_small_prime,
+        \&strat_greedy,
     );
 }
 
