@@ -218,7 +218,7 @@ sub sigma {
         my ($p,$a) = @_;
         return (($p ** ($a + 1)) - 1) / ($p - 1);
     };
-    return reduce { $term->(@$a) * $term->(@$b) } @pairs;
+    return reduce { $a * $b } map { $term->(@$_) } @pairs;
 }
 
 =head1 STRATEGIES
