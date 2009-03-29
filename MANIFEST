@@ -1,5 +1,6 @@
 Changes
 example/2n-table.txt
+example/egyptian.pl
 lib/Math/Fraction/Egyptian.pm
 Makefile.PL
 MANIFEST
@@ -7,6 +8,9 @@ MANIFEST.SKIP
 README
 t/00-load.t
 t/01-gcd.t
+t/02-is-practical.t
+t/03-sigma.t
+t/10-strategy-trivial.t
 t/15-strategy-greedy.t
 t/30-to-egyptian.t
 t/31-to-common.t
