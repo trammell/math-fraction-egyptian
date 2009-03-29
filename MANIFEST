@@ -7,11 +7,7 @@ MANIFEST.SKIP
 README
 t/00-load.t
 t/01-gcd.t
-t/02-greedy.t
-t/10-to-egyptian.t
-t/11-to-common.t
 t/15-strategy-greedy.t
-t/20-rhind.t
 t/30-to-egyptian.t
 t/31-to-common.t
 t/50-rhind.t
