@@ -93,15 +93,15 @@ sub to_egyptian {
         STRATEGY:
         for my $s (strategies()) {
             my @result = eval {
-                local $SIG{'__DIE__'} = undef;
                 $s->($n,$d);
             };
             if ($@) {
                 next STRATEGY;
             }
             else {
-                ($n,$d) = @result[0,1];
-                push @egypt, $result[2];
+                $n = shift(@result);
+                $d = shift(@result);
+                push @egypt, @result;
                 last STRATEGY;
             }
         }
@@ -261,6 +261,7 @@ sub strategies {
     return (
         \&strat_trivial,
         \&strat_small_prime,
+        \&strat_practical,
         \&strat_greedy,
     );
 }
