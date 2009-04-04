@@ -3,7 +3,7 @@ package Math::Fraction::Egyptian;
 use strict;
 use warnings FATAL => 'all';
 use base 'Exporter';
-use List::Util 'first', 'reduce';
+use List::Util qw(first reduce max);
 
 our @EXPORT_OK = qw( to_egyptian to_common );
 
@@ -238,7 +238,7 @@ Each function call is of the form C<I<strategy>($numer,$denom)>.
 
 The return value from a successful strategy call is the list C<($numer,
 $denom, @egypt)>: the new numerator, the new denominator, and one or more
-new Egyptian factors.
+new Egyptian factors extracted from the input fraction.
 
 =item *
 
@@ -283,7 +283,8 @@ sub strat_trivial {
 
 =head2 strat_small_prime($n,$d)
 
-For small odd prime denominators p, use the expansion:
+For a numerator of 2 with small odd prime denominators p, use the
+expansion:
 
     2/p = 2/(p + 1) + 2/p(p + 1)
 
@@ -302,7 +303,10 @@ sub strat_small_prime {
 =head2 strat_practical($numer,$denom)
 
 Attempts to find a multiplier C<$M> such that C<$M * $denom> is a practical
-number.  The scaled numerator C<$M * $numer> is
+number.  This lets us break up the scaled numerator C<$M * $numer> as in
+the following example:
+
+    2/9 => 9 * 2 is 18, a practical number
 
     2/9 = 2/9 * 2/2 = 4/18
                     = 3/18 + 1/18
@@ -315,10 +319,22 @@ sub strat_practical {
 
     # look for a multiple of $d that is a practical number
     my $M = first { is_practical($_ * $d) } 1 .. $d;
+    die "unsuitable strategy" unless $M;
 
+    $n *= $M;
+    $d *= $M;
 
+    my @divisors = grep { $d % $_ == 0 } 1 .. $d;
 
-
+    my @N;
+    while ($n) {
+        @divisors = grep { $_ <= $n } @divisors;
+        my $x = max @divisors;
+        push @N, $x;
+        $n -= $x;
+    }
+    my @e = map { $d / $_ } @N;
+    return (0, 1, @e);
 }
 
 =head2 is_practical($n)
