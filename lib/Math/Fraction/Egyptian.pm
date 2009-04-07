@@ -5,6 +5,8 @@ use warnings FATAL => 'all';
 use base 'Exporter';
 use List::Util qw(first reduce max);
 
+our $DEBUG = undef;
+
 our @EXPORT_OK = qw( to_egyptian to_common );
 
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
@@ -92,16 +94,18 @@ sub to_egyptian {
     while ($n != 0) {
         STRATEGY:
         for my $s (strategies()) {
+            my ($name,$coderef) = @$s;
             my @result = eval {
-                $s->($n,$d);
+                $coderef->($n,$d);
             };
             if ($@) {
                 next STRATEGY;
             }
             else {
-                $n = shift(@result);
-                $d = shift(@result);
-                push @egypt, @result;
+                my ($n2, $d2, @e2) = @result;
+                warn "$n/$d => $n2/$d2 + [@e2] ($name)\n" if $DEBUG;
+                ($n,$d) = ($n2,$d2);
+                push @egypt, @e2;
                 last STRATEGY;
             }
         }
@@ -158,7 +162,6 @@ sub simplify {
     my $gcd = GCD($n,$d);
     return ($n / $gcd, $d / $gcd);
 }
-
 
 =head2 primes()
 
@@ -259,10 +262,11 @@ Returns a list of strategies to apply to a given fraction.
 
 sub strategies {
     return (
-        \&strat_trivial,
-        \&strat_small_prime,
-        \&strat_practical,
-        \&strat_greedy,
+        [ trivial          => \&strat_trivial, ],
+        [ small_prime      => \&strat_small_prime, ],
+        [ practical_strict => \&strat_practical_strict, ],
+        [ practical        => \&strat_practical, ],
+        [ greedy           => \&strat_greedy, ],
     );
 }
 
@@ -293,12 +297,47 @@ expansion:
 
 sub strat_small_prime {
     my ($n,$d) = @_;
-    if ($n == 2 && $d > 2 && $d < 50 && $PRIMES{$d}) {
+    if ($n == 2 && $d > 2 && $d < 13 && $PRIMES{$d}) {
         return (2, $d * ($d + 1), ($d + 1) / 2 );
     }
     else {
         die "unsuitable strategy";
     }
+}
+
+sub strat_practical_strict {
+    my ($N,$D) = @_;
+
+    # find multiples of $d that are practical numbers
+    my @multiples = grep { is_practical($_ * $D) } 1 .. $D;
+
+    warn "mult = @multiples\n" if $DEBUG;
+
+    die "unsuitable strategy" unless @multiples;
+
+    MULTIPLE:
+    for my $M (@multiples) {
+        my $n *= $N * $M;
+        my $d *= $D * $M;
+        warn "trying M=$M, n=$n, d=$d\n" if $DEBUG;
+
+        my @div = grep { $d % $_ == 0 && $M % $_ == 0 } 1 .. $d;
+        warn " => divisors=(@div)\n" if $DEBUG;
+
+        my @N;
+        while ($n) {
+            next MULTIPLE unless @N;
+            @div = grep { $_ <= $n } @div;
+            my $x = max @div;
+            push @N, $x;
+            next MULTIPLE if ($d / $N[0]) != $M;
+            $n -= $x;
+            @div = grep { $_ < $x } @div;
+        }
+        my @e = map { $d / $_ } @N;
+        return (0, 1, @e);
+    }
+    die "unsuitable strategy";
 }
 
 =head2 strat_practical($numer,$denom)
@@ -328,11 +367,13 @@ sub strat_practical {
     my @divisors = grep { $d % $_ == 0 } 1 .. $d;
 
     my @N;
+    my %seen;
     while ($n) {
         @divisors = grep { $_ <= $n } @divisors;
         my $x = max @divisors;
         push @N, $x;
         $n -= $x;
+        @divisors = grep { $_ < $x } @divisors;
     }
     my @e = map { $d / $_ } @N;
     return (0, 1, @e);

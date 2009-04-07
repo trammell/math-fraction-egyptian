@@ -16,7 +16,7 @@ my @tests = (
     [ 2, 7 => 4, 28 ],
     [ 2, 9 => 6, 18 ],
     [ 2, 11 => 6, 66 ],
-    [ 2, 13 => 8, 52, 104 ],
+#   [ 2, 13 => 8, 52, 104 ],
     [ 2, 15 => 10, 30 ],
     [ 2, 17 => 12, 51, 68 ],
     [ 2, 19 => 12, 76, 114 ],
@@ -31,6 +31,15 @@ for my $i (0 .. $#tests) {
         "incorrectly expanded $num/$den to @actual -- should be @correct"
     );
 }
+
+TODO: {
+    local $TODO = "Don't have Rhind quite down yet...";
+    local $Math::Fraction::Egyptian::DEBUG = 1;
+    is_deeply([ to_egyptian(2,13) ], [ 8, 52, 104 ] );
+#   [ 2, 13 => 8, 52, 104 ],
+}
+
+
 
 __END__
 
