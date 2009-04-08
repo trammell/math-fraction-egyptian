@@ -305,21 +305,28 @@ sub strat_small_prime {
     }
 }
 
+=head2 strat_practical_strict($n,$d)
+
+
+
+
+=cut
+
 sub strat_practical_strict {
     my ($N,$D) = @_;
 
     # find multiples of $d that are practical numbers
-    my @multiples = grep { is_practical($_ * $D) } 1 .. $D;
+    my @mult = grep { is_practical($_ * $D) } 1 .. $D;
 
-    warn "mult = @multiples\n" if $DEBUG;
+    warn "$N/$D => mult=(@mult)\n" if $DEBUG;
 
-    die "unsuitable strategy" unless @multiples;
+    die "unsuitable strategy" unless @mult;
 
     MULTIPLE:
-    for my $M (@multiples) {
+    for my $M (@mult) {
         my $n = $N * $M;
         my $d = $D * $M;
-        warn "trying M=$M, n=$n, d=$d\n" if $DEBUG;
+        warn "trying M=$M ($n/$d)\n" if $DEBUG;
 
         # find the divisors of $d
         my @div = grep { $d % $_ == 0 } 1 .. $d;
@@ -336,13 +343,14 @@ sub strat_practical_strict {
             @div = grep { $_ < $x } @div;
         }
         my @e = map { $d / $_ } @N;
+        warn " => expansion=(@e)\n" if $DEBUG;
 
         next MULTIPLE if $e[0] != $M;
         next MULTIPLE if grep { $d % $_ } @e[1 .. $#e]; # FIXME
 
-o
-    4. As an observation a1, ..., ai were always divisors of the
-       denominator a of the first partition 1/a
+# o
+#    4. As an observation a1, ..., ai were always divisors of the
+#       denominator a of the first partition 1/a
 
         return (0, 1, @e);
     }
@@ -415,6 +423,29 @@ sub _is_practical {
     return 1;
 }
 
+=head2 strat_composite($n,$d)
+
+From L<Wikipedia|http://en.wikipedia.org/wiki/Egyptian_fraction>:
+
+=over 4
+
+For composite denominators, factored as p×q, one can expand 2/pq using the
+identity 2/pq = 1/aq + 1/apq, where a = (p+1)/2. For instance, applying this
+method for pq = 21 gives p = 3, q = 7, and a = (3+1)/2 = 2, producing the
+expansion 2/21 = 1/14 + 1/42 from the Rhind papyrus. Some authors have
+
+=back
+
+=cut
+
+sub strat_composite {
+    my ($n,$d) = @_;
+    die "unsuitable strategy" if $PRIMES{$d};
+    my ($p,$q) = decompose($d);
+    die "unsuitable strategy" unless $p % 2 == 1; # $p must be odd
+    my $a = ($p + 1) / 2;
+    return (0, 1, $a * $q, $a * $p * $q);
+}
 
 =head2 strat_greedy($n,$d)
 
@@ -479,6 +510,18 @@ L<http://cpanratings.perl.org/d/Math-Fraction-Egyptian>
 =item * Search CPAN
 
 L<http://search.cpan.org/dist/Math-Fraction-Egyptian/>
+
+=back
+
+=head1 RESOURCES
+
+=over 4
+
+=item L<http://en.wikipedia.org/wiki/Egyptian_fraction>
+
+=item L<http://mathpages.com/home/kmath340/kmath340.htm>
+
+=item L<http://mathworld.wolfram.com/RhindPapyrus.html>
 
 =back
 

@@ -28,11 +28,12 @@ for my $i (0 .. $#tests) {
     is_deeply(
         \@actual,
         \@correct,
-        "incorrectly expanded $num/$den to @actual -- should be @correct"
-    );
+        "$num/$den expands to @correct"
+    ) or diag("$num/$den expands to (@actual); should be (@correct)");
 }
 
 TODO: {
+    no warnings 'once';
     local $TODO = "Don't have Rhind quite down yet...";
     local $Math::Fraction::Egyptian::DEBUG = 1;
     is_deeply([ to_egyptian(2,13) ], [ 8, 52, 104 ] );
