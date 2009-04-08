@@ -317,24 +317,33 @@ sub strat_practical_strict {
 
     MULTIPLE:
     for my $M (@multiples) {
-        my $n *= $N * $M;
-        my $d *= $D * $M;
+        my $n = $N * $M;
+        my $d = $D * $M;
         warn "trying M=$M, n=$n, d=$d\n" if $DEBUG;
 
-        my @div = grep { $d % $_ == 0 && $M % $_ == 0 } 1 .. $d;
+        # find the divisors of $d
+        my @div = grep { $d % $_ == 0 } 1 .. $d;
         warn " => divisors=(@div)\n" if $DEBUG;
 
+        # expand $n into a sum of divisors of $d
         my @N;
         while ($n) {
             next MULTIPLE unless @N;
             @div = grep { $_ <= $n } @div;
             my $x = max @div;
             push @N, $x;
-            next MULTIPLE if ($d / $N[0]) != $M;
             $n -= $x;
             @div = grep { $_ < $x } @div;
         }
         my @e = map { $d / $_ } @N;
+
+        next MULTIPLE if $e[0] != $M;
+        next MULTIPLE if grep { $d % $_ } @e[1 .. $#e]; # FIXME
+
+o
+    4. As an observation a1, ..., ai were always divisors of the
+       denominator a of the first partition 1/a
+
         return (0, 1, @e);
     }
     die "unsuitable strategy";
