@@ -2,5 +2,6 @@ blib/
 .gitignore
 .git/
 Makefile$
-MANIFEST.bak
+.bak$
+.old$
 pm_to_blib
