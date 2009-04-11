@@ -5,6 +5,13 @@ use Test::More 'no_plan';
 
 use_ok('Math::Fraction::Egyptian','to_egyptian');
 
+sub dispatch {
+
+
+
+}
+
+
 # these test values come from the Rhind Mathematical Papyrus; see e.g.
 # http://rmprectotable.blogspot.com/2008/07/rmp-2n-table.html
 

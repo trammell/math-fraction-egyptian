@@ -13,6 +13,8 @@ our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 our $VERSION = '0.01';
 
+my %PRIMES = map { $_ => 1 } primes();
+
 =head1 NAME
 
 Math::Fraction::Egyptian - construct Egyptian representations of fractions
@@ -64,20 +66,19 @@ Converts fraction C<$numer/$denom> to its Egyptian representation.
 
 Example:
 
+     my @egypt = to_egyptian(5,9);  # converts 5/9
+     print "@egypt";                # prints FIXME
+
 =cut
 
 sub to_egyptian {
     my ($n,$d,%attr) = @_;
-    ($n,$d) = (int($n), int($d));
+    ($n,$d) = (abs(int($n)), abs(int($d)));
+    $attr{dispatch} ||= \&dispatch;
 
-    # force numerator, denominator to be positive
-    if ($n < 0) {
-        warn "Taking absolute value of numerator";
-        $n = abs($n);
-    }
-    if ($d < 0) {
-        warn "Taking absolute value of denominator";
-        $d = abs($d);
+    # oh come on
+    if ($d == 0) {
+        die "can't convert $n/$d";
     }
 
     # handle improper fractions
@@ -87,33 +88,39 @@ sub to_egyptian {
         $n = $n2;
     }
 
-    # perform the expansion...
-
     my @egypt;
-
-    while ($n != 0) {
-        STRATEGY:
-        for my $s (strategies()) {
-            my ($name,$coderef) = @$s;
-            my @result = eval {
-                $coderef->($n,$d);
-            };
-            if ($@) {
-                next STRATEGY;
-            }
-            else {
-                my ($n2, $d2, @e2) = @result;
-                warn "$n/$d => $n2/$d2 + [@e2] ($name)\n" if $DEBUG;
-                ($n,$d) = ($n2,$d2);
-                push @egypt, @e2;
-                last STRATEGY;
-            }
-        }
+    while ($n && $n != 0) {
+        ($n, $d, my @e) = $attr{dispatch}->($n,$d);
+        push @egypt, @e;
     }
-
     return @egypt;
 }
 
+sub dispatch {
+    my ($n, $d) = @_;
+    my @egypt;
+
+    # perform the expansion...
+
+    STRATEGY:
+    for my $s (strategies()) {
+        my ($name,$coderef) = @$s;
+        my @result = eval {
+            $coderef->($n,$d);
+        };
+        if ($@) {
+            next STRATEGY;
+        }
+        else {
+            my ($n2, $d2, @e2) = @result;
+            warn "$n/$d => $n2/$d2 + [@e2] ($name)\n" if $DEBUG;
+            ($n,$d) = ($n2,$d2);
+            push @egypt, @e2;
+            last STRATEGY;
+        }
+    }
+    return $n, $d, @egypt;
+}
 
 =head2 to_common(@denominators)
 
@@ -121,9 +128,8 @@ Converts an Egyptian fraction into a common fraction.
 
 Example:
 
-    # determine 1/2 + 1/5 + 1/11
-    my ($numer,$denom) = to_common(2,5,11);
-    # 87/110
+    my ($num,$den) = to_common(2,5,11);     # 1/2 + 1/5 + 1/11 = ?
+    print "$num/$den";                      # prints "87/110"
 
 =cut
 
@@ -137,8 +143,8 @@ sub to_common {
 
 =head2 GCD($x,$y)
 
-Uses Euclid's algorithm to determine the greatest common denominator ("GCD") of
-C<$x> and C<$y>.  Returns the GCD.
+Uses Euclid's algorithm to determine the greatest common denominator
+("GCD") of C<$x> and C<$y>.  Returns the GCD.
 
 =cut
 
@@ -153,7 +159,7 @@ Reduces fraction C<$n/$d> to simplest terms.
 
 Example:
 
-    my @x = simplify(100,25);   # @x is now (4,1)
+    my @x = simplify(25,100);   # @x is (1,4)
 
 =cut
 
@@ -184,17 +190,15 @@ sub primes {
     );
 }
 
-my %PRIMES = map { $_ => 1 } primes();
-
 =head2 prime_factors($n)
 
-Returns a list of (prime,multiplicity) pairs for C<$n>, sorted by
-magnitude.
+Returns the prime factors of C<$n> as a list of (prime,multiplicity) pairs.
+The list is sorted by increasing prime number.
 
 Example:
 
     my @pf = prime_factors(120);
-    # @pf = ([2,3],[3,1],[5,1]);
+    # 120 = 2 * 2 * 2 * 3 * 5, so @pf = ([2,3],[3,1],[5,1])
 
 =cut
 
@@ -214,8 +218,14 @@ sub prime_factors {
     return map { [ $_, $pf{$_} ] } sort { $a <=> $b } keys %pf;
 }
 
-# see http://en.wikipedia.org/wiki/Divisor_function
+=head2 sigma(@pairs)
+
+Helper function for determining whether a number is "practical" or not.
+
+=cut
+
 sub sigma {
+    # see http://en.wikipedia.org/wiki/Divisor_function
     my @pairs = @_;
     my $term = sub {
         my ($p,$a) = @_;
@@ -227,7 +237,25 @@ sub sigma {
 =head1 STRATEGIES
 
 Fibonacci, in his Liber Abaci, identifies seven different methods for
-converting common to Egyptian fractions.
+converting common to Egyptian fractions:
+
+=over 4
+
+=item 1.
+
+=item 2.
+
+=item 3.
+
+=item 4.
+
+=item 5.
+
+=item 6.
+
+=item 7.
+
+=back
 
 The strategies as implemented below have the following features in common:
 
@@ -235,7 +263,7 @@ The strategies as implemented below have the following features in common:
 
 =item *
 
-Each function call is of the form C<I<strategy>($numer,$denom)>.
+Each function call is of the form C<I<strategy>($num,$den)>.
 
 =item *
 
@@ -274,6 +302,10 @@ sub strategies {
 
 If C<$n> is C<1>, then this fraction is already in Egyptian form.
 
+Example:
+
+    my @x = strat_trivial(1,5);     # @x = (0,1,5)
+
 =cut
 
 sub strat_trivial {
@@ -303,6 +335,50 @@ sub strat_small_prime {
     else {
         die "unsuitable strategy";
     }
+}
+
+=head2 strat_practical($n,$d)
+
+Attempts to find a multiplier C<$M> such that the scaled denominator C<$M *
+$d> is a practical number.  This lets us break up the scaled numerator C<$M
+* $numer> as in this example:
+
+    examining 2/9:
+        9 * 2 is 18, and 18 is a practical number
+        choose $M = 2
+
+    scale 2/9 => 4/18
+              =  3/18 + 1/18
+              =  1/6 + 1/18
+
+By definition, all numbers N < P, where P is practical, can be represented
+as a sum of distinct divisors of P.
+
+=cut
+
+sub strat_practical {
+    my ($n,$d) = @_;
+
+    # look for a multiple of $d that is a practical number
+    my $M = first { is_practical($_ * $d) } 1 .. $d;
+    die "unsuitable strategy" unless $M;
+
+    $n *= $M;
+    $d *= $M;
+
+    my @divisors = grep { $d % $_ == 0 } 1 .. $d;
+
+    my @N;
+    my %seen;
+    while ($n) {
+        @divisors = grep { $_ <= $n } @divisors;
+        my $x = max @divisors;
+        push @N, $x;
+        $n -= $x;
+        @divisors = grep { $_ < $x } @divisors;
+    }
+    my @e = map { $d / $_ } @N;
+    return (0, 1, @e);
 }
 
 =head2 strat_practical_strict($n,$d)
@@ -357,44 +433,6 @@ sub strat_practical_strict {
     die "unsuitable strategy";
 }
 
-=head2 strat_practical($numer,$denom)
-
-Attempts to find a multiplier C<$M> such that C<$M * $denom> is a practical
-number.  This lets us break up the scaled numerator C<$M * $numer> as in
-the following example:
-
-    2/9 => 9 * 2 is 18, a practical number
-
-    2/9 = 2/9 * 2/2 = 4/18
-                    = 3/18 + 1/18
-                    = 1/6 + 1/18
-
-=cut
-
-sub strat_practical {
-    my ($n,$d) = @_;
-
-    # look for a multiple of $d that is a practical number
-    my $M = first { is_practical($_ * $d) } 1 .. $d;
-    die "unsuitable strategy" unless $M;
-
-    $n *= $M;
-    $d *= $M;
-
-    my @divisors = grep { $d % $_ == 0 } 1 .. $d;
-
-    my @N;
-    my %seen;
-    while ($n) {
-        @divisors = grep { $_ <= $n } @divisors;
-        my $x = max @divisors;
-        push @N, $x;
-        $n -= $x;
-        @divisors = grep { $_ < $x } @divisors;
-    }
-    my @e = map { $d / $_ } @N;
-    return (0, 1, @e);
-}
 
 =head2 is_practical($n)
 
@@ -402,13 +440,15 @@ Returns a true value if C<$n> is a practical number.
 
 =cut
 
-my %practical;
-sub is_practical {
-    my $n = shift;
-    unless (exists $practical{$n}) {
-        $practical{$n} = _is_practical($n);
+{
+    my $practical;
+    sub is_practical {
+        my $n = shift;
+        unless (exists $practical->{$n}) {
+            $practical->{$n} = _is_practical($n);
+        }
+        return $practical->{$n};
     }
-    return $practical{$n};
 }
 
 sub _is_practical {
@@ -451,7 +491,7 @@ sub strat_composite {
 
 Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
 
-    n/d =>  1/ceil(d/n) + (-d%n)/(d*ceil(d/n))
+    n/d => 1/ceil(d/n) + (-d%n)/(d*ceil(d/n))
 
 The function returns a list of three integers: the new numerator, the new
 denominator, and the next calculated value in the Egyptian expansion.
@@ -459,8 +499,8 @@ denominator, and the next calculated value in the Egyptian expansion.
 Example:
 
     # calculate the next term in the greedy expansion of 2/7
-
     my ($n,$d,$e) = greedy(2,7);
+    print "$n/$d ($e)";     # prints ?????
 
 =cut
 
@@ -495,6 +535,10 @@ You can also look for information at:
 
 =over 4
 
+=item * GitHub
+
+L<http://github.com/jotr/math-fraction-egyptian>
+
 =item * RT: CPAN's request tracker
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Math-Fraction-Egyptian>
@@ -528,7 +572,7 @@ L<http://search.cpan.org/dist/Math-Fraction-Egyptian/>
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Project Euler, L<http://projecteuler.net/>, for stretching my mind
-into obscure areas of mathematics.  C<:-)>
+into obscure areas of mathematics.  C<< :-) >>
 
 =head1 COPYRIGHT & LICENSE
 
