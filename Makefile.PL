@@ -17,7 +17,7 @@ my %params = (
         SUFFIX => 'gz',
     },
     clean => {
-        FILES => [ 'Math-Fraction-Egyptian-*', '*.bak' ],
+        FILES => [ 'cover_db', 'Math-Fraction-Egyptian-*', '*.bak' ],
     },
 );
 
