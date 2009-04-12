@@ -25,5 +25,10 @@ if ($ExtUtils::MakeMaker::VERSION >= 6.3002) {
     $params{LICENSE} = 'perl';
 }
 
+# add coverage to makefile
+sub MY::postamble {
+    return "\ntestcover:\n\tcover -test\n\n";
+}
+
 WriteMakefile(%params);
 
