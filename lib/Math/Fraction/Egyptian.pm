@@ -224,6 +224,23 @@ sub prime_factors {
     return map { [ $_, $pf{$_} ] } sort { $a <=> $b } keys %pf;
 }
 
+=head2 decompose($n)
+
+If C<$n> is a composite number, attempts to return ($p,$q) such that $p *
+$q == $n and
+
+=cut
+
+sub decompose {
+    my @pf = reverse map { ($_->[0]) x $_->[1] } prime_factors($_[0]);
+    my ($p, $q) = (1, 1);
+    for my $f (@pf) {
+        if ($p < $q) { $p *= $f }
+        else         { $q *= $f }
+    }
+    return sort { $a <=> $b } $p, $q;
+}
+
 =head2 sigma(@pairs)
 
 Helper function for determining whether a number is "practical" or not.
