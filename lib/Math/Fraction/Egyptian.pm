@@ -55,8 +55,10 @@ modern historical studies of ancient mathematics.
 
 =back
 
-This module implements a handful of strategies used by the ancient
-Egyptians in ...
+A given common fraction has an infinite number of representations as an
+Egyptian fraction.  This module implements a handful of strategies for
+conversion of common fractions to Egyptian form; see section L<STRATEGIES>
+below for details on these implementations.
 
 =head1 FUNCTIONS
 
@@ -74,7 +76,7 @@ Example:
 sub to_egyptian {
     my ($n,$d,%attr) = @_;
     ($n,$d) = (abs(int($n)), abs(int($d)));
-    $attr{dispatch} ||= \&dispatch;
+    $attr{dispatch} ||= \&_dispatch;
 
     # oh come on
     if ($d == 0) {
@@ -96,7 +98,8 @@ sub to_egyptian {
     return @egypt;
 }
 
-sub dispatch {
+# default strategy dispatcher
+sub _dispatch {
     my ($n, $d) = @_;
     my @egypt;
 
@@ -203,8 +206,8 @@ The list is sorted by increasing prime number.
 
 Example:
 
-    my @pf = prime_factors(120);
-    # 120 = 2 * 2 * 2 * 3 * 5, so @pf = ([2,3],[3,1],[5,1])
+    my @pf = prime_factors(120);    # 120 = 2 * 2 * 2 * 3 * 5
+    # @pf = ([2,3],[3,1],[5,1])
 
 =cut
 
@@ -226,8 +229,11 @@ sub prime_factors {
 
 =head2 decompose($n)
 
-If C<$n> is a composite number, attempts to return ($p,$q) such that $p *
-$q == $n and
+If C<$n> is a composite number, returns ($p,$q) such that:
+
+    * $p != 1
+    * $q != 1
+    * $p x $q == $n
 
 =cut
 
@@ -569,6 +575,16 @@ L<http://search.cpan.org/dist/Math-Fraction-Egyptian/>
 =head1 RESOURCES
 
 =over 4
+
+=item L<http://en.wikipedia.org/wiki/Category:Egyptian_fractions>
+
+=item L<http://en.wikipedia.org/wiki/Common_fraction>
+
+=item L<http://en.wikipedia.org/wiki/Rhind_Mathematical_Papyrus>
+
+=item L<http://en.wikipedia.org/wiki/RMP_2/n_table>
+
+=item L<http://en.wikipedia.org/wiki/Liber_Abaci>
 
 =item L<http://en.wikipedia.org/wiki/Egyptian_fraction>
 
