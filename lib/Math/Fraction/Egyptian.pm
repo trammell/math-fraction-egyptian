@@ -321,7 +321,8 @@ expansion:
 sub strat_small_prime {
     my ($n,$d) = @_;
     if ($n == 2 && $d > 2 && $d < 13 && $PRIMES{$d}) {
-        return (2, $d * ($d + 1), ($d + 1) / 2 );
+        my $x = ($d + 1) / 2;
+        return (0, 1, $x, $d * $x);
     }
     else {
         die "unsuitable strategy";
