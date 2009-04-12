@@ -84,7 +84,7 @@ sub to_egyptian {
     }
 
     # handle improper fractions
-    if ($n > $d) {
+    if ($n >= $d) {
         my $n2 = $n % $d;
         warn "$n/$d is an improper fraction; expanding $n2/$d instead";
         $n = $n2;
