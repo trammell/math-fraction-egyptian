@@ -1,15 +1,17 @@
 Math-Fraction-Egyptian
 
-This module implements an algorithm for converting a common fraction into an
-Egyptian fraction.
+An Egyptian fraction is the sum of distinct unit fractions, for example
 
-RESOURCES
+    1/4 + 1/28
 
-   http://en.wikipedia.org/wiki/Category:Egyptian_fractions
-   http://en.wikipedia.org/wiki/Common_fraction
-   http://en.wikipedia.org/wiki/Egyptian_fractions
-   http://en.wikipedia.org/wiki/Rhind_Mathematical_Papyrus
-   http://en.wikipedia.org/wiki/RMP_2/n_table
+Each fraction in the expression meets these requirements:
+
+    * the numerator is equal to 1
+    * the denominator is a positive integer
+    * none of the denominators in the expression are equal
+
+This module implements a number of algorithms for converting common
+fractions into "Egyptian" fractions.
 
 INSTALLATION
 
@@ -28,6 +30,9 @@ perldoc command.
    perldoc Math::Fraction::Egyptian
 
 You can also look for information at:
+
+   Github, where the library is hosted
+      http://github.com/trammell/math-fraction-egyptian/
 
    RT, CPAN's request tracker
       http://rt.cpan.org/NoAuth/Bugs.html?Dist=Math-Fraction-Egyptian
