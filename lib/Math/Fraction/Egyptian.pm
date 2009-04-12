@@ -100,10 +100,16 @@ sub dispatch {
     my ($n, $d) = @_;
     my @egypt;
 
-    # perform the expansion...
+    my @strategies = (
+        [ trivial          => \&strat_trivial, ],
+        [ small_prime      => \&strat_small_prime, ],
+        [ practical_strict => \&strat_practical_strict, ],
+        [ practical        => \&strat_practical, ],
+        [ greedy           => \&strat_greedy, ],
+    );
 
     STRATEGY:
-    for my $s (strategies()) {
+    for my $s (@strategies) {
         my ($name,$coderef) = @$s;
         my @result = eval {
             $coderef->($n,$d);
@@ -282,25 +288,10 @@ is unsuitable.
 
 =cut
 
-=head2 strategies()
-
-Returns a list of strategies to apply to a given fraction.
-
-=cut
-
-sub strategies {
-    return (
-        [ trivial          => \&strat_trivial, ],
-        [ small_prime      => \&strat_small_prime, ],
-        [ practical_strict => \&strat_practical_strict, ],
-        [ practical        => \&strat_practical, ],
-        [ greedy           => \&strat_greedy, ],
-    );
-}
-
 =head2 strat_trivial($n,$d)
 
-If C<$n> is C<1>, then this fraction is already in Egyptian form.
+Strategy for dealing with "trivial" expansions--if C<$n> is C<1>, then this
+fraction is already in Egyptian form.
 
 Example:
 
