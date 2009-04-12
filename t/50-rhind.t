@@ -54,7 +54,7 @@ is_deeply([to_egyptian(2,11)], [6,66], '2/11 => (6,66)');
 
 TODO: {
     local $TODO = "2/13 => 8,52,104";
-    local $Math::Fraction::Egyptian::DEBUG = 1;
+#   local $Math::Fraction::Egyptian::DEBUG = 1;
     is_deeply([ to_egyptian(2,13) ], [ 8, 52, 104 ], "2/13 => 8,52,104" );
 
     local $Math::Fraction::Egyptian::DEBUG = 0;
