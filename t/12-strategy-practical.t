@@ -6,7 +6,7 @@ use Test::More 'no_plan';
 
 use_ok('Math::Fraction::Egyptian');
 
-local *strat_practical = \&Math::Fraction::Egyptian::strat_practical;
+local *s_practical = \&Math::Fraction::Egyptian::s_practical;
 
 my @expansions = (
     [ 2, 9 => 0, 1, 6, 18 ],        # 2/9 => 1/6 + 1/18
@@ -15,7 +15,7 @@ my @expansions = (
 for my $i (0 .. $#expansions) {
     my ($n1, $d1, @correct) = @{ $expansions[$i] };
     my ($n2, $d2, @e) = @correct;
-    my @actual = strat_practical($n1,$d1);
+    my @actual = s_practical($n1,$d1);
     is_deeply(
         \@actual,
         \@correct,

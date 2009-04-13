@@ -55,10 +55,10 @@ modern historical studies of ancient mathematics.
 
 =back
 
-A given common fraction has an infinite number of representations as an
-Egyptian fraction.  This module implements a handful of strategies for
-conversion of common fractions to Egyptian form; see section L<STRATEGIES>
-below for details on these implementations.
+A common fraction has an infinite number of different Egyptian fraction
+representations.  This module only implements a handful of conversion
+strategies for conversion of common fractions to Egyptian form; see section
+L<STRATEGIES> below for details.
 
 =head1 FUNCTIONS
 
@@ -102,11 +102,11 @@ sub _dispatch {
     my @egypt;
 
     my @strategies = (
-        [ trivial          => \&strat_trivial, ],
-        [ small_prime      => \&strat_small_prime, ],
-        [ practical_strict => \&strat_practical_strict, ],
-        [ practical        => \&strat_practical, ],
-        [ greedy           => \&strat_greedy, ],
+        [ trivial          => \&s_trivial, ],
+        [ small_prime      => \&s_small_prime, ],
+        [ practical_strict => \&s_practical_strict, ],
+        [ practical        => \&s_practical, ],
+        [ greedy           => \&s_greedy, ],
     );
 
     STRATEGY:
@@ -284,58 +284,56 @@ The strategies as implemented below have the following features in common:
 
 =item *
 
-Each function call is of the form C<I<strategy>($num,$den)>.
+Each function call has a signature of the form C<I<strategy>($numerator,
+$denominator)>.
 
 =item *
 
-The return value from a successful strategy call is the list C<($numer,
-$denom, @egypt)>: the new numerator, the new denominator, and one or more
-new Egyptian factors extracted from the input fraction.
+The return value from a successful strategy call is the list C<($numerator,
+$denominator, @egyptian)>: the new numerator, the new denominator, and
+zero or more new Egyptian factors extracted from the input fraction.
 
 =item *
 
-There's no guarantee that a strategy will apply to a given fraction.  If
-the strategy determines that it cannot determine the next number in the
-expansion, it throws an exception (via C<die()>) to indicate the strategy
-is unsuitable.
+Some strategies are not applicable to all inputs.  If the strategy
+determines that it cannot determine the next number in the expansion, it
+throws an exception (via C<die()>) to indicate the strategy is unsuitable.
 
 =back
 
 =cut
 
-=head2 strat_trivial($n,$d)
+=head2 s_trivial($n,$d)
 
 Strategy for dealing with "trivial" expansions--if C<$n> is C<1>, then this
 fraction is already in Egyptian form.
 
 Example:
 
-    my @x = strat_trivial(1,5);     # @x = (0,1,5)
+    my @x = s_trivial(1,5);     # @x = (0,1,5)
 
 =cut
 
-sub strat_trivial {
+sub s_trivial {
     my ($n,$d) = @_;
     if (defined($n) && $n == 1) {
         return (0,1,$d);
     }
-    else {
-        die "unsuitable strategy";
-    }
+    die "unsuitable strategy";
 }
 
-=head2 strat_small_prime($n,$d)
+=head2 s_small_prime($n,$d)
 
-For a numerator of 2 with small odd prime denominators p, use the
+For a numerator of 2 with odd prime denominator d, one can use this
 expansion:
 
-    2/p = 2/(p + 1) + 2/p(p + 1)
+    2/d = 2/(d + 1) + 2/d(d + 1)
 
 =cut
 
-sub strat_small_prime {
+sub s_small_prime {
     my ($n,$d) = @_;
-    if ($n == 2 && $d > 2 && $d < 13 && $PRIMES{$d}) {
+    if ($n == 2 && $d > 2 && $d < 30 && $PRIMES{$d}) {
         my $x = ($d + 1) / 2;
         return (0, 1, $x, $d * $x);
     }
@@ -344,7 +342,7 @@ sub strat_small_prime {
     }
 }
 
-=head2 strat_practical($n,$d)
+=head2 s_practical($n,$d)
 
 Attempts to find a multiplier C<$M> such that the scaled denominator C<$M *
 $d> is a practical number.  This lets us break up the scaled numerator C<$M
@@ -363,7 +361,7 @@ as a sum of distinct divisors of P.
 
 =cut
 
-sub strat_practical {
+sub s_practical {
     my ($n,$d) = @_;
 
     # look for a multiple of $d that is a practical number
@@ -388,14 +386,14 @@ sub strat_practical {
     return (0, 1, @e);
 }
 
-=head2 strat_practical_strict($n,$d)
+=head2 s_practical_strict($n,$d)
 
 
 
 
 =cut
 
-sub strat_practical_strict {
+sub s_practical_strict {
     my ($N,$D) = @_;
 
     # find multiples of $d that are practical numbers
@@ -467,48 +465,62 @@ sub _is_practical {
     return 1;
 }
 
-=head2 strat_composite($n,$d)
+=head2 s_composite($n,$d)
 
 From L<Wikipedia|http://en.wikipedia.org/wiki/Egyptian_fraction>:
 
 =over 4
 
 For composite denominators, factored as p×q, one can expand 2/pq using the
-identity 2/pq = 1/aq + 1/apq, where a = (p+1)/2. For instance, applying this
-method for pq = 21 gives p = 3, q = 7, and a = (3+1)/2 = 2, producing the
-expansion 2/21 = 1/14 + 1/42 from the Rhind papyrus. Some authors have
+identity 2/pq = 1/aq + 1/apq, where a = (p+1)/2.  Clearly p must be odd.
+
+For instance, applying this method for d = pq = 21 gives p=3, q=7, and
+a=(3+1)/2=2, producing the expansion 2/21 = 1/14 + 1/42.
 
 =back
 
 =cut
 
-sub strat_composite {
+sub s_composite {
     my ($n,$d) = @_;
     die "unsuitable strategy" if $PRIMES{$d};
     my ($p,$q) = decompose($d);
-    die "unsuitable strategy" unless $p % 2 == 1; # $p must be odd
-    my $a = ($p + 1) / 2;
-    return (0, 1, $a * $q, $a * $p * $q);
+
+    # is $p odd
+    if ($p % 2 == 1) {
+        my $a = ($p + 1) / 2;
+        return (0, 1, $a * $q, $a * $p * $q);
+    }
+
+    # is $q odd
+    if ($q % 2 == 1) {
+        my $a = ($q + 1) / 2;
+        return (0, 1, $a * $p, $a * $p * $q);
+    }
+
+    die "unsuitable strategy";
 }
 
-=head2 strat_greedy($n,$d)
+=head2 s_greedy($n,$d)
 
 Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
 
-    n/d => 1/ceil(d/n) + (-d%n)/(d*ceil(d/n))
-
-The function returns a list of three integers: the new numerator, the new
-denominator, and the next calculated value in the Egyptian expansion.
+    n/d => 1/ceil(d/n) + ((-d)%n)/(d*ceil(d/n))
 
 Example:
 
-    # calculate the next term in the greedy expansion of 2/7
+    # performing the greedy expansion of 3/7:
+    #   ceil(7/3) = 3
+    #   new numerator = (-7)%3 = 2
+    #   new denominator = 7 * 3 = 21
+    # so 3/7 => 1/3 + 2/21
+
     my ($n,$d,$e) = greedy(2,7);
-    print "$n/$d ($e)";     # prints ?????
+    print "$n/$d ($e)";     # prints "2/21 (3)"
 
 =cut
 
-sub strat_greedy {
+sub s_greedy {
     use POSIX 'ceil';
     my ($n,$d) = @_;
     my $e = ceil( $d / $n );
