@@ -79,9 +79,7 @@ sub to_egyptian {
     $attr{dispatch} ||= \&_dispatch;
 
     # oh come on
-    if ($d == 0) {
-        die "can't convert $n/$d";
-    }
+    if ($d == 0) { die "can't convert $n/$d"; }
 
     # handle improper fractions
     if ($n >= $d) {
@@ -114,19 +112,13 @@ sub _dispatch {
     STRATEGY:
     for my $s (@strategies) {
         my ($name,$coderef) = @$s;
-        my @result = eval {
-            $coderef->($n,$d);
-        };
-        if ($@) {
-            next STRATEGY;
-        }
-        else {
-            my ($n2, $d2, @e2) = @result;
-            warn "$n/$d => $n2/$d2 + [@e2] ($name)\n" if $DEBUG;
-            ($n,$d) = ($n2,$d2);
-            push @egypt, @e2;
-            last STRATEGY;
-        }
+        my @result = eval { $coderef->($n,$d); };
+        next STRATEGY if $@;
+        my ($n2, $d2, @e2) = @result;
+        warn "$n/$d => $n2/$d2 + [@e2] ($name)\n" if $DEBUG;
+        ($n,$d) = ($n2,$d2);
+        push @egypt, @e2;
+        last STRATEGY;
     }
     return $n, $d, @egypt;
 }
@@ -448,22 +440,19 @@ sub strat_practical_strict {
     die "unsuitable strategy";
 }
 
-
 =head2 is_practical($n)
 
 Returns a true value if C<$n> is a practical number.
 
 =cut
 
-{
-    my $practical;
-    sub is_practical {
-        my $n = shift;
-        unless (exists $practical->{$n}) {
-            $practical->{$n} = _is_practical($n);
-        }
-        return $practical->{$n};
+my $_practical;
+sub is_practical {
+    my $n = shift;
+    unless (exists $_practical->{$n}) {
+        $_practical->{$n} = _is_practical($n);
     }
+    return $_practical->{$n};
 }
 
 sub _is_practical {
