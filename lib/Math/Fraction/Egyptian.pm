@@ -5,8 +5,6 @@ use warnings FATAL => 'all';
 use base 'Exporter';
 use List::Util qw(first reduce max);
 
-our $DEBUG = undef;
-
 our @EXPORT_OK = qw( to_egyptian to_common );
 
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
@@ -115,7 +113,6 @@ sub _dispatch {
         my @result = eval { $coderef->($n,$d); };
         next STRATEGY if $@;
         my ($n2, $d2, @e2) = @result;
-        warn "$n/$d => $n2/$d2 + [@e2] ($name)\n" if $DEBUG;
         ($n,$d) = ($n2,$d2);
         push @egypt, @e2;
         last STRATEGY;
@@ -399,19 +396,15 @@ sub s_practical_strict {
     # find multiples of $d that are practical numbers
     my @mult = grep { is_practical($_ * $D) } 1 .. $D;
 
-    warn "$N/$D => mult=(@mult)\n" if $DEBUG;
-
     die "unsuitable strategy" unless @mult;
 
     MULTIPLE:
     for my $M (@mult) {
         my $n = $N * $M;
         my $d = $D * $M;
-        warn "trying M=$M ($n/$d)\n" if $DEBUG;
 
         # find the divisors of $d
         my @div = grep { $d % $_ == 0 } 1 .. $d;
-        warn " => divisors=(@div)\n" if $DEBUG;
 
         # expand $n into a sum of divisors of $d
         my @N;
@@ -424,7 +417,6 @@ sub s_practical_strict {
             @div = grep { $_ < $x } @div;
         }
         my @e = map { $d / $_ } @N;
-        warn " => expansion=(@e)\n" if $DEBUG;
 
         next MULTIPLE if $e[0] != $M;
         next MULTIPLE if grep { $d % $_ } @e[1 .. $#e]; # FIXME

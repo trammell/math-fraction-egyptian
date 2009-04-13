@@ -3,8 +3,6 @@ use strict;
 use Data::Dumper;
 use Test::More 'no_plan';
 
-our $DEBUG = 1;
-
 use_ok('Math::Fraction::Egyptian','to_egyptian');
 
 sub ahmet {
@@ -41,7 +39,6 @@ sub dispatch_ahmet {
         }
         else {
             my ($n2, $d2, @e2) = @result;
-            warn "$n/$d => $n2/$d2 + [@e2] ($name)\n" if $DEBUG;
             ($n,$d) = ($n2,$d2);
             push @egypt, @e2;
             last STRATEGY;
@@ -60,10 +57,7 @@ is_deeply([to_egyptian(2,11)], [6,66], '2/11 => (6,66)');
 
 TODO: {
     local $TODO = "2/13 => 8,52,104";
-#   local $Math::Fraction::Egyptian::DEBUG = 1;
     is_deeply([ to_egyptian(2,13) ], [ 8, 52, 104 ], "2/13 => 8,52,104" );
-
-    local $Math::Fraction::Egyptian::DEBUG = 0;
 
 is_deeply([to_egyptian(2,15)], [10,30], '2/15 => (10,30)');
 is_deeply([to_egyptian(2,17)], [12,51,68], '2/17 => (12,51,68)');
