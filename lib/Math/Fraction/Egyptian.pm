@@ -633,6 +633,8 @@ L<http://search.cpan.org/dist/Math-Fraction-Egyptian/>
 
 =item L<http://mathworld.wolfram.com/RhindPapyrus.html>
 
+=item L<http://liberabaci.blogspot.com/>
+
 =back
 
 =head1 ACKNOWLEDGEMENTS
