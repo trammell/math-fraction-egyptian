@@ -20,6 +20,11 @@ my %params = (
     clean => {
         FILES => [ 'cover_db', 'Math-Fraction-Egyptian-*', '*.bak' ],
     },
+    test => {
+        TESTS => 't/*.t t/strategy/*.t',
+    }
+
+
 );
 
 if ($ExtUtils::MakeMaker::VERSION >= 6.3002) {
