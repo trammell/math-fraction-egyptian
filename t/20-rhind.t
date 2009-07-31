@@ -50,61 +50,51 @@ sub dispatch_ahmet {
 sub read_source {
     open(my $fh, 't/rhind.txt') or die $!;
     my @rhind;
-    my @todo;
     while (<$fh>) {
         next if /^\s*#/;
         next unless /\S/;
-        if (/todo/i) {
-            s/\s+/ /g;
-            s/[^0-9 ]//g;
-            push @todo, [ split(' ',$_) ];
-        }
-        else {
-            push @rhind, [ split(' ',$_) ];
-        }
+        push @rhind, [ split(' ',$_) ];
     }
-    return \@rhind, \@todo;
+    return @rhind;
 }
 
-my ($rhind, $todo) = read_source();
+my @rhind = read_source();
 
 # first verify that the Egyptian => common conversion works for all Rhind
 # entries
-for my $r (@$rhind, @$todo) {
+for my $r (@rhind) {
     my ($denom, @e) = @$r;
     my $common = [ to_common(@e) ];
     is_deeply($common, [ 2, $denom ] ) or
         diag("got (@e) == (@$common) != (2,$denom) ");
 }
 
-# now verify that the common => Egyptian conversion works for all entries
 
-for my $r (@$rhind) {
+my %TODO = map { $_, 1 } qw( 3 13 17 19 25 29 53 55 59 91 95 97 );
+
+# now verify that the common => Egyptian conversion is correct
+
+for my $r (@rhind) {
     my ($denom, @e) = @$r;
     my $desc = do {
         local $, = q(,);
         "2/$denom => (@e)";
     };
     my @actual = to_egyptian(2,$denom);
-    is_deeply(\@actual, \@e, $desc) or
-        diag("got 2/$denom => (@actual), expected (@e)");
-}
 
-# now run the TODO tests for incorrect common => Egyptian conversion
-
-TODO: {
-    for my $r (@$todo) {
-        my ($denom, @e) = @$r;
-        my $desc = do {
-            local $, = q(,);
-            "2/$denom => (@e)";
-        };
-        local $TODO = $desc;
-        my @actual = to_egyptian(2,$denom);
+    if ($TODO{$denom}) {
+        TODO: {
+            local $TODO = $desc;
+            is_deeply(\@actual, \@e, $desc) or
+                diag("got 2/$denom => (@actual), expected (@e)");
+        }
+    }
+    else {
         is_deeply(\@actual, \@e, $desc) or
             diag("got 2/$denom => (@actual), expected (@e)");
     }
 }
+
 
 # these test values come from the Rhind Mathematical Papyrus; see e.g.
 # http://rmprectotable.blogspot.com/2008/07/rmp-2n-table.html
