@@ -108,6 +108,7 @@ sub dispatch {
     my @strategies = map "Math::Fraction::Egyptian::$_", qw(
         trivial
         small_prime
+        practical
         greedy
     );
 
