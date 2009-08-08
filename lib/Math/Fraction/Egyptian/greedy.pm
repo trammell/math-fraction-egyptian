@@ -1,7 +1,6 @@
-
 package Math::Fraction::Egyptian::greedy;
 
-=head2 greedy($n,$d)
+=head2 $class->expand($n,$d)
 
 Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
 
@@ -34,14 +33,16 @@ Example:
 
 =cut
 
+use Math::Fraction::Egyptian 'simplify';
 use POSIX 'ceil';
 
-sub greedy {
-    my ($n,$d) = @_;
+sub expand {
+    my ($class,$n,$d) = @_;
     my $e = ceil( $d / $n );
     ($n, $d) = simplify(($n - $d) % $n, $d * $e);
     return ($n, $d, $e);
 }
+
 
 1;
 

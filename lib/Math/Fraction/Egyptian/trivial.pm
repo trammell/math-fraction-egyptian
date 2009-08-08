@@ -113,19 +113,19 @@ throws an exception (via C<die()>) to indicate the strategy is unsuitable.
 
 =cut
 
-=head2 s_trivial($n,$d)
+=head2 $class->expand($n,$d)
 
 Strategy for dealing with "trivial" expansions--if C<$n> is C<1>, then this
 fraction is already in Egyptian form.
 
 Example:
 
-    my @x = s_trivial(1,5);     # @x = (0,1,5)
+    my @x = $class->expand(1,5);     # @x = (0,1,5)
 
 =cut
 
-sub trivial {
-    my ($n,$d) = @_;
+sub expand {
+    my ($class,$n,$d) = @_;
     if (defined($n) && $n == 1) {
         return (0,1,$d);
     }

@@ -1,4 +1,4 @@
-package Math::Fraction::Egyptian;
+package Math::Fraction::Egyptian::practical;
 
 use strict;
 use warnings FATAL => 'all';
@@ -70,102 +70,6 @@ Example:
     print "@egypt";                 # prints "2 18"
 
 =cut
-
-sub to_egyptian {
-    my ($n,$d,%attr) = @_;
-    ($n,$d) = (abs(int($n)), abs(int($d)));
-    $attr{dispatch} ||= \&_dispatch;
-
-    # oh come on
-    if ($d == 0) { die "can't convert $n/$d"; }
-
-    # handle improper fractions
-    if ($n >= $d) {
-        my $n2 = $n % $d;
-        warn "$n/$d is an improper fraction; expanding $n2/$d instead";
-        $n = $n2;
-    }
-
-    my @egypt;
-    while ($n && $n != 0) {
-        ($n, $d, my @e) = $attr{dispatch}->($n,$d);
-        push @egypt, @e;
-    }
-    return @egypt;
-}
-
-# default strategy dispatcher
-sub _dispatch {
-    my ($n, $d) = @_;
-    my @egypt;
-
-    my @strategies = (
-        [ trivial          => \&s_trivial, ],
-        [ small_prime      => \&s_small_prime, ],
-        [ practical_strict => \&s_practical_strict, ],
-        [ practical        => \&s_practical, ],
-        [ greedy           => \&s_greedy, ],
-    );
-
-    STRATEGY:
-    for my $s (@strategies) {
-        my ($name,$coderef) = @$s;
-        my @result = eval { $coderef->($n,$d); };
-        next STRATEGY if $@;
-        my ($n2, $d2, @e2) = @result;
-        ($n,$d) = ($n2,$d2);
-        push @egypt, @e2;
-        last STRATEGY;
-    }
-    return $n, $d, @egypt;
-}
-
-=head2 to_common(@denominators)
-
-Converts an Egyptian fraction into a common fraction.
-
-Example:
-
-    my ($num,$den) = to_common(2,5,11);     # 1/2 + 1/5 + 1/11 = ?
-    print "$num/$den";                      # prints "87/110"
-
-=cut
-
-sub to_common {
-    my ($n,$d) = (0,1);
-    for my $a (@_) {
-        ($n, $d) = simplify($a * $n + $d, $a * $d);
-    }
-    return ($n,$d);
-}
-
-=head2 GCD($x,$y)
-
-Uses Euclid's algorithm to determine the greatest common denominator
-("GCD") of C<$x> and C<$y>.  Returns the GCD.
-
-=cut
-
-sub GCD {
-    my ($x, $y) = (int($_[0]), int($_[1]));
-    return ($y) ? GCD($y, $x % $y) : $x;
-}
-
-=head2 simplify($n,$d)
-
-Reduces fraction C<$n/$d> to simplest terms.
-
-Example:
-
-    my @x = simplify(25,100);   # @x is (1,4)
-
-=cut
-
-sub simplify {
-    my ($n, $d) = @_;
-    my $gcd = GCD($n,$d);
-    return ($n / $gcd, $d / $gcd);
-}
 
 =head2 primes()
 
@@ -348,25 +252,6 @@ throws an exception (via C<die()>) to indicate the strategy is unsuitable.
 
 =cut
 
-=head2 s_trivial($n,$d)
-
-Strategy for dealing with "trivial" expansions--if C<$n> is C<1>, then this
-fraction is already in Egyptian form.
-
-Example:
-
-    my @x = s_trivial(1,5);     # @x = (0,1,5)
-
-=cut
-
-sub s_trivial {
-    my ($n,$d) = @_;
-    if (defined($n) && $n == 1) {
-        return (0,1,$d);
-    }
-    die "unsuitable strategy";
-}
-
 =head2 s_small_prime($n,$d)
 
 For a numerator of 2 with odd prime denominator d, one can use this
@@ -539,33 +424,6 @@ sub s_composite {
     }
 
     die "unsuitable strategy";
-}
-
-=head2 s_greedy($n,$d)
-
-Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
-
-    n/d => 1/ceil(d/n) + ((-d)%n)/(d*ceil(d/n))
-
-Example:
-
-    # performing the greedy expansion of 3/7:
-    #   ceil(7/3) = 3
-    #   new numerator = (-7)%3 = 2
-    #   new denominator = 7 * 3 = 21
-    # so 3/7 => 1/3 + 2/21
-
-    my ($n,$d,$e) = greedy(2,7);
-    print "$n/$d ($e)";     # prints "2/21 (3)"
-
-=cut
-
-sub s_greedy {
-    use POSIX 'ceil';
-    my ($n,$d) = @_;
-    my $e = ceil( $d / $n );
-    ($n, $d) = simplify((-1 * $d) % $n, $d * $e);
-    return ($n, $d, $e);
 }
 
 =head1 AUTHOR

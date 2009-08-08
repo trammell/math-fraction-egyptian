@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use base 'Exporter';
 use List::Util qw(first reduce max);
 
-our @EXPORT_OK = qw( to_egyptian to_common );
+our @EXPORT_OK = qw( to_egyptian to_common simplify primes );
 
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
@@ -74,16 +74,16 @@ Example:
 sub to_egyptian {
     my ($n,$d,%attr) = @_;
     ($n,$d) = (abs(int($n)), abs(int($d)));
-    $attr{dispatch} ||= \&_dispatch;
+    $attr{dispatch} ||= \&dispatch;
 
     # oh come on
     if ($d == 0) { die "can't convert $n/$d"; }
 
     # handle improper fractions
     if ($n >= $d) {
-        my $n2 = $n % $d;
-        warn "$n/$d is an improper fraction; expanding $n2/$d instead";
-        $n = $n2;
+        $_ = $n % $d;
+        warn "$n/$d is an improper fraction; expanding $_/$d instead";
+        $n = $_;
     }
 
     my @egypt;
@@ -94,30 +94,39 @@ sub to_egyptian {
     return @egypt;
 }
 
-# default strategy dispatcher
-sub _dispatch {
-    my ($n, $d) = @_;
+=head2 dispatch($numer,$denom)
+
+Default strategy dispatcher.
+
+=cut
+
+sub dispatch {
+    my ($numer, $denom) = @_;
     my @egypt;
 
-    my @strategies = (
-        [ trivial          => \&s_trivial, ],
-        [ small_prime      => \&s_small_prime, ],
-        [ practical_strict => \&s_practical_strict, ],
-        [ practical        => \&s_practical, ],
-        [ greedy           => \&s_greedy, ],
+    # construct a list of strategy classes to apply
+    my @strategies = map "Math::Fraction::Egyptian::$_", qw(
+        trivial
+        small_prime
+        greedy
     );
 
     STRATEGY:
     for my $s (@strategies) {
-        my ($name,$coderef) = @$s;
-        my @result = eval { $coderef->($n,$d); };
+        eval "require $s;";
+        die $@ if $@;
+        unless ($s->can('expand')) {
+            warn "Skipping bad strategy class '$s'\n";
+            next STRATEGY;
+        }
+        my @result = eval { $s->expand($numer,$denom); };
         next STRATEGY if $@;
-        my ($n2, $d2, @e2) = @result;
-        ($n,$d) = ($n2,$d2);
-        push @egypt, @e2;
+        my ($n, $d, @e) = @result;
+        ($numer,$denom) = ($n,$d);
+        push @egypt, @e;
         last STRATEGY;
     }
-    return $n, $d, @egypt;
+    return $numer, $denom, @egypt;
 }
 
 =head2 to_common(@denominators)
@@ -348,45 +357,6 @@ throws an exception (via C<die()>) to indicate the strategy is unsuitable.
 
 =cut
 
-=head2 s_trivial($n,$d)
-
-Strategy for dealing with "trivial" expansions--if C<$n> is C<1>, then this
-fraction is already in Egyptian form.
-
-Example:
-
-    my @x = s_trivial(1,5);     # @x = (0,1,5)
-
-=cut
-
-sub s_trivial {
-    my ($n,$d) = @_;
-    if (defined($n) && $n == 1) {
-        return (0,1,$d);
-    }
-    die "unsuitable strategy";
-}
-
-=head2 s_small_prime($n,$d)
-
-For a numerator of 2 with odd prime denominator d, one can use this
-expansion:
-
-    2/d = 2/(d + 1) + 2/d(d + 1)
-
-=cut
-
-sub s_small_prime {
-    my ($n,$d) = @_;
-    if ($n == 2 && $d > 2 && $d < 30 && $PRIMES{$d}) {
-        my $x = ($d + 1) / 2;
-        return (0, 1, $x, $d * $x);
-    }
-    else {
-        die "unsuitable strategy";
-    }
-}
-
 =head2 s_practical($n,$d)
 
 Attempts to find a multiplier C<$M> such that the scaled denominator C<$M *
@@ -539,33 +509,6 @@ sub s_composite {
     }
 
     die "unsuitable strategy";
-}
-
-=head2 s_greedy($n,$d)
-
-Implements Fibonacci's greedy algorithm for computing Egyptian fractions:
-
-    n/d => 1/ceil(d/n) + ((-d)%n)/(d*ceil(d/n))
-
-Example:
-
-    # performing the greedy expansion of 3/7:
-    #   ceil(7/3) = 3
-    #   new numerator = (-7)%3 = 2
-    #   new denominator = 7 * 3 = 21
-    # so 3/7 => 1/3 + 2/21
-
-    my ($n,$d,$e) = greedy(2,7);
-    print "$n/$d ($e)";     # prints "2/21 (3)"
-
-=cut
-
-sub s_greedy {
-    use POSIX 'ceil';
-    my ($n,$d) = @_;
-    my $e = ceil( $d / $n );
-    ($n, $d) = simplify((-1 * $d) % $n, $d * $e);
-    return ($n, $d, $e);
 }
 
 =head1 AUTHOR
