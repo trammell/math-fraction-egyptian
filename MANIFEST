@@ -2,7 +2,10 @@ Changes
 example/2n-table.txt
 example/egyptian.pl
 lib/Math/Fraction/Egyptian.pm
+lib/Math/Fraction/Egyptian/greedy.pm
 lib/Math/Fraction/Egyptian/practical.pm
+lib/Math/Fraction/Egyptian/small_prime.pm
+lib/Math/Fraction/Egyptian/Strategy.pod
 lib/Math/Fraction/Egyptian/trivial.pm
 Makefile.PL
 MANIFEST
