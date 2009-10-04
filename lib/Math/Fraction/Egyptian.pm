@@ -537,7 +537,7 @@ You can also look for information at:
 
 =item * GitHub
 
-L<http://github.com/jotr/math-fraction-egyptian>
+L<http://github.com/trammell/math-fraction-egyptian>
 
 =item * RT: CPAN's request tracker
 
