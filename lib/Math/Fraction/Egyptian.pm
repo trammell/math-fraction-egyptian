@@ -106,10 +106,10 @@ sub dispatch {
 
     # construct a list of strategy classes to apply
     my @strategies = map "Math::Fraction::Egyptian::$_", qw(
-        trivial
-        small_prime
-        practical
-        greedy
+        Trivial
+        SmallPrime
+        Practical
+        Greedy
     );
 
     STRATEGY:
