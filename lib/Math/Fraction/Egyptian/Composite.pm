@@ -10,7 +10,8 @@ my %PRIMES = map { $_ => undef } primes();
 
 =head1 NAME
 
-s_composite($n,$d)
+Math::Fraction::Egyptian::Composite - implement the Composite strategy for
+fraction expansion
 
 From L<http://en.wikipedia.org/wiki/Egyptian_fraction>:
 
@@ -27,6 +28,10 @@ a=(3+1)/2=2, producing the expansion 2/21 = 1/14 + 1/42.
 =head1 CLASS METHODS
 
 =head2 $class->expand($numer,$denom)
+
+Returns
+
+=head1 SEE ALSO
 
 FIXME
 
