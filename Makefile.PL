@@ -9,6 +9,7 @@ my %params = (
     ABSTRACT_FROM => 'lib/Math/Fraction/Egyptian.pm',
     PL_FILES      => {},
     PREREQ_PM     => {
+        'List::Util'      => 0,
         'Test::More'      => 0,
         'Test::Exception' => 0,
         'Test::Warn'      => 0,
