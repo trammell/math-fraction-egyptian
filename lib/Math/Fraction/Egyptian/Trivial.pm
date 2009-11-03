@@ -1,4 +1,4 @@
-package Math::Fraction::Egyptian::trivial;
+package Math::Fraction::Egyptian::Trivial;
 
 use strict;
 use warnings FATAL => 'all';
