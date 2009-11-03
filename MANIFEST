@@ -2,11 +2,13 @@ Changes
 example/2n-table.txt
 example/egyptian.pl
 lib/Math/Fraction/Egyptian.pm
-lib/Math/Fraction/Egyptian/greedy.pm
-lib/Math/Fraction/Egyptian/practical.pm
-lib/Math/Fraction/Egyptian/small_prime.pm
+lib/Math/Fraction/Egyptian/Composite.pm
+lib/Math/Fraction/Egyptian/Greedy.pm
+lib/Math/Fraction/Egyptian/Practical.pm
+lib/Math/Fraction/Egyptian/SmallPrime.pm
 lib/Math/Fraction/Egyptian/Strategy.pod
-lib/Math/Fraction/Egyptian/trivial.pm
+lib/Math/Fraction/Egyptian/StrictPractical.pm
+lib/Math/Fraction/Egyptian/Trivial.pm
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
