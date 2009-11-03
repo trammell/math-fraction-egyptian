@@ -1,4 +1,16 @@
 package Math::Fraction::Egyptian::Greedy;
+use strict;
+use warnings FATAL => 'all';
+
+=pod
+
+=head1 NAME
+
+Math::Fraction::Egyptian::Greedy - "greedy" expansion strategy
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
 
 =head2 $class->expand($n,$d)
 
