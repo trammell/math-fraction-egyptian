@@ -52,7 +52,7 @@ in modern historical studies of ancient mathematics.
 =back
 
 A common fraction has an infinite number of different Egyptian fraction
-representations.  This module only implements a handful of conversion
+representations.  This package implements a selection of conversion
 strategies for conversion of common fractions to Egyptian form; see section
 L<STRATEGIES> below for details.
 
@@ -72,7 +72,7 @@ Example:
 sub to_egyptian {
     my ($n,$d,%attr) = @_;
     ($n,$d) = (abs(int($n)), abs(int($d)));
-    $attr{dispatch} ||= \&dispatch;
+    $attr{dispatch} ||= \&mfe_dispatch;
 
     # oh come on
     if ($d == 0) { die "can't convert $n/$d"; }
@@ -92,13 +92,21 @@ sub to_egyptian {
     return @egypt;
 }
 
-=head2 dispatch($numer,$denom)
+=head2 mfe_dispatch($numer,$denom)
 
-Default strategy dispatcher.
+Default strategy dispatcher for function C<to_egyptian>.  The following
+strategies are attempted, in this order:
+
+    Trivial
+    SmallPrime
+    Practical
+    Greedy
+
+The result of the first applicable strategy is returned.
 
 =cut
 
-sub dispatch {
+sub mfe_dispatch {
     my ($numer, $denom) = @_;
     my @egypt;
 
@@ -130,7 +138,8 @@ sub dispatch {
 
 =head2 to_common(@denominators)
 
-Converts an Egyptian fraction into a common fraction.
+Converts an Egyptian fraction into a common fraction, expressed in simplest
+terms.
 
 Example:
 
@@ -150,6 +159,53 @@ sub to_common {
 
 
 =head1 STRATEGIES
+
+The following classes implement distinct strategies for converting common
+fractions to Egyptian fractions:
+
+=over 4
+
+=item L<Math::Fraction::Egyptian::Trivial>
+
+=item L<Math::Fraction::Egyptian::Greedy>
+
+=item L<Math::Fraction::Egyptian::Practical>
+
+=item Math::Fraction::Egyptian::StrictPractical
+
+=item Math::Fraction::Egyptian::Composite
+
+=item Math::Fraction::Egyptian::SmallPrime
+
+=back
+
+=head2
+
+The strategies as implemented below have the following features in common:
+
+=over 4
+
+=item *
+
+Each function call has a signature of the form
+C<I<$class>-E<gt>>expand($numerator,$denominator)>.
+
+=item *
+
+The return value from a successful strategy call is the list C<($numerator,
+$denominator, @egyptian)>: the new numerator, the new denominator, and
+zero or more new Egyptian factors extracted from the input fraction.
+
+=item *
+
+Some strategies are not applicable to all inputs.  If the strategy
+determines that it cannot determine the next number in the expansion, it
+throws an exception (via C<die()>) to indicate the strategy is unsuitable.
+
+=back
+
+
+
 
 Fibonacci, in his Liber Abaci, identifies seven different methods for
 converting common to Egyptian fractions:
@@ -249,12 +305,11 @@ John Trammell, C<< <johntrammell <at> gmail <dot> com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-math-fraction-egyptian at
-rt.cpan.org>, or through
-the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Math-Fraction-Egyptian>.  I
-will be notified, and then you'll automatically be notified of progress on your
-bug as I make changes.
+Please report any bugs or feature requests to C<<
+bug-math-fraction-egyptian at rt.cpan.org >>, or through the web interface
+at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Math-Fraction-Egyptian>.
+I will be notified, and then you'll automatically be notified of progress
+on your bug as I make changes.
 
 =head1 SUPPORT
 
@@ -315,7 +370,7 @@ L<http://search.cpan.org/dist/Math-Fraction-Egyptian/>
 =head1 ACKNOWLEDGEMENTS
 
 Thanks to Project Euler, L<http://projecteuler.net/>, for stretching my mind
-into obscure areas of mathematics.  C<< :-) >>
+into obscure areas of mathematics.  C<< ;-) >>
 
 =head1 COPYRIGHT & LICENSE
 
