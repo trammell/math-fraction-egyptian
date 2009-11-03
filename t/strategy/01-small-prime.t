@@ -3,10 +3,10 @@ use warnings;
 use Test::More 'no_plan';
 use Test::Exception;
 
-use_ok('Math::Fraction::Egyptian::small_prime');
+use_ok('Math::Fraction::Egyptian::SmallPrime');
 
 local *small_prime = sub {
-    Math::Fraction::Egyptian::small_prime->expand(@_);
+    Math::Fraction::Egyptian::SmallPrime->expand(@_);
 };
 
 # 2/p = 2/(p + 1) + 2/p(p + 1)

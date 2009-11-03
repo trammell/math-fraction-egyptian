@@ -1,4 +1,4 @@
-package Math::Fraction::Egyptian::small_prime;
+package Math::Fraction::Egyptian::SmallPrime;
 
 use strict;
 use warnings FATAL => 'all';

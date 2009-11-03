@@ -4,10 +4,10 @@ use warnings;
 #use Data::Dumper;
 use Test::More 'no_plan';
 
-use_ok('Math::Fraction::Egyptian::greedy');
+use_ok('Math::Fraction::Egyptian::Greedy');
 
 local *greedy = sub {
-    Math::Fraction::Egyptian::greedy->expand(@_);
+    Math::Fraction::Egyptian::Greedy->expand(@_);
 };
 
 my @expansions = (

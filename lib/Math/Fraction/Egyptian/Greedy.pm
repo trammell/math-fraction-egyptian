@@ -1,4 +1,4 @@
-package Math::Fraction::Egyptian::greedy;
+package Math::Fraction::Egyptian::Greedy;
 
 =head2 $class->expand($n,$d)
 
@@ -42,7 +42,6 @@ sub expand {
     ($n, $d) = simplify(($n - $d) % $n, $d * $e);
     return ($n, $d, $e);
 }
-
 
 1;
 
