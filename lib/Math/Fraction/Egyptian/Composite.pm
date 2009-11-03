@@ -2,9 +2,15 @@ package Math::Fraction::Egyptian::Composite;
 
 use strict;
 use warnings FATAL => 'all';
-use Math::Fraction::Egyptian 'decompose';
+use Math::Fraction::Egyptian::Utils qw/ decompose primes /;
 
-=head2 s_composite($n,$d)
+my %PRIMES = map { $_ => undef } primes();
+
+=pod
+
+=head1 NAME
+
+s_composite($n,$d)
 
 From L<http://en.wikipedia.org/wiki/Egyptian_fraction>:
 
@@ -22,7 +28,7 @@ a=(3+1)/2=2, producing the expansion 2/21 = 1/14 + 1/42.
 
 sub expand {
     my ($class,$n,$d) = @_;
-    die "unsuitable strategy" if $PRIMES{$d};
+    die "unsuitable strategy" if exists $PRIMES{$d};
     my ($p,$q) = decompose($d);
 
     # is $p odd

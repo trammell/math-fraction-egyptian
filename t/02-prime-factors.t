@@ -1,12 +1,11 @@
 use strict;
-use warnings;
-use Data::Dumper;
+use warnings FATAL => 'all';
 use Test::More 'no_plan';
 
-use_ok('Math::Fraction::Egyptian');
+use_ok('Math::Fraction::Egyptian::Utils');
 
-local *prime_factors = \&Math::Fraction::Egyptian::prime_factors;
-local *decompose = \&Math::Fraction::Egyptian::decompose;
+local *prime_factors = \&Math::Fraction::Egyptian::Utils::prime_factors;
+local *decompose = \&Math::Fraction::Egyptian::Utils::decompose;
 
 is_deeply(
     [ prime_factors(28) ],

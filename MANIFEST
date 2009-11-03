@@ -9,6 +9,7 @@ lib/Math/Fraction/Egyptian/SmallPrime.pm
 lib/Math/Fraction/Egyptian/Strategy.pod
 lib/Math/Fraction/Egyptian/StrictPractical.pm
 lib/Math/Fraction/Egyptian/Trivial.pm
+lib/Math/Fraction/Egyptian/Utils.pm
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP

@@ -1,14 +1,15 @@
 use strict;
-use warnings;
-use Data::Dumper;
+use warnings FATAL => 'all';
 use Test::More 'no_plan';
 use Test::Exception;
 
-use_ok('Math::Fraction::Egyptian');
+use_ok('Math::Fraction::Egyptian::Composite');
 
-local *s_composite = \&Math::Fraction::Egyptian::s_composite;
+local *composite = sub {
+    Math::Fraction::Egyptian::Composite->expand(@_);
+};
 
-throws_ok { s_composite(2,11) } qr/unsuitable strategy/;
+throws_ok { composite(2,11) } qr/unsuitable strategy/;
 
-is_deeply([s_composite(2,21)],[0,1,14,42]);
+is_deeply([composite(2,21)],[0,1,14,42]);
 

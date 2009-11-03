@@ -3,9 +3,9 @@ use warnings;
 use Data::Dumper;
 use Test::More 'no_plan';
 
-use_ok('Math::Fraction::Egyptian');
+use_ok('Math::Fraction::Egyptian::Utils');
 
-local *is_practical = \&Math::Fraction::Egyptian::is_practical;
+local *is_practical = \&Math::Fraction::Egyptian::Utils::is_practical;
 
 # test some practical numbers
 my @practical = (

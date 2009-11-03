@@ -3,7 +3,7 @@ package Math::Fraction::Egyptian::Practical;
 use strict;
 use warnings FATAL => 'all';
 use List::Util qw(first max reduce);
-use Math::Fraction::Egyptian 'primes';
+use Math::Fraction::Egyptian::Utils 'primes';
 
 my $PRACTICAL = {};
 

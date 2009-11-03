@@ -1,11 +1,10 @@
 use strict;
 use warnings;
-use Data::Dumper;
 use Test::More 'no_plan';
 
-use_ok('Math::Fraction::Egyptian');
+use_ok('Math::Fraction::Egyptian::Utils');
 
-local *sigma = \&Math::Fraction::Egyptian::sigma;
+local *sigma = \&Math::Fraction::Egyptian::Utils::sigma;
 
 # see http://en.wikipedia.org/wiki/Practical_number
 # http://www.research.att.com/~njas/sequences/A000203

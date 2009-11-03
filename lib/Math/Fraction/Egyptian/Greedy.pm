@@ -45,7 +45,7 @@ Example:
 
 =cut
 
-use Math::Fraction::Egyptian 'simplify';
+use Math::Fraction::Egyptian::Utils 'simplify';
 use POSIX 'ceil';
 
 sub expand {
