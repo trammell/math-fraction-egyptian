@@ -1,6 +1,5 @@
 use strict;
-#use warnings;
-use Data::Dumper;
+use warnings FATAL => 'all';
 use Test::More 'no_plan';
 
 use_ok('Math::Fraction::Egyptian','to_common','to_egyptian');
