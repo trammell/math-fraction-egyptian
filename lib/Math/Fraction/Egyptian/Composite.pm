@@ -24,6 +24,12 @@ a=(3+1)/2=2, producing the expansion 2/21 = 1/14 + 1/42.
 
 =back
 
+=head1 CLASS METHODS
+
+=head2 $class->expand($numer,$denom)
+
+FIXME
+
 =cut
 
 sub expand {
