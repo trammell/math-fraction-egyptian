@@ -7,11 +7,11 @@ our $VERSION = '0.01';
 
 =head1 NAME
 
-Math::Fraction::Egyptian::trivial - trivial algorithm
+Math::Fraction::Egyptian::Trivial - trivial expansion strategy
 
 =head1 SYNOPSIS
 
-    use Math::Fraction::Egyptian::trivial;
+    use Math::Fraction::Egyptian::Trivial;
 
 =head1 DESCRIPTION
 
