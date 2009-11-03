@@ -1,7 +1,10 @@
-# line format: <denom> <e1> <e2> <e3> ... <eN>
-# The numerator is intended to be '2' in all cases.
-# For example, the line "7 4 28" means "2/7 = 1/4 + 1/28", and
-# the line "9 6 18" means "2/9 = 1/6 + 1/18".
+# these test values come from the Rhind Mathematical Papyrus; see e.g.
+# http://rmprectotable.blogspot.com/2008/07/rmp-2n-table.html
+# line format: <denom> <e1> <e2> <e3> ...
+# The numerator is intended to be '2' in all cases; the denominator is the
+# first value on each line.  For example, the line "5 3 15" indicates that
+# the Rhind expansion of the fraction "2/5" is "1/3 + 1/15".  Similarly the
+# line "9 6 18" means the expansion of  "2/9" is "1/6 + 1/18".
 
 5       3       15
 7       4       28
