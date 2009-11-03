@@ -21,9 +21,12 @@ t/04-is-practical.t
 t/10-to-egyptian.t
 t/11-to-vulgar.t
 t/20-rhind.t
-t/boilerplate.t
-t/pod-coverage.t
-t/pod.t
+t/95-kwalitee.t
+t/96-fixme.t
+t/97-pod.t
+t/98-pod-coverage.t
+t/99-perlcritic.t
+t/perlcriticrc
 t/rhind.txt
 t/strategy/00-trivial.t
 t/strategy/01-small-prime.t
