@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 
 my %params = (
     NAME          => 'Math::Fraction::Egyptian',
-    AUTHOR        => 'John Trammell <johntrammell <at> gmail <dot> com>',
+    AUTHOR        => 'John Trammell <johntrammell@gmail.com>',
     VERSION_FROM  => 'lib/Math/Fraction/Egyptian.pm',
     ABSTRACT_FROM => 'lib/Math/Fraction/Egyptian.pm',
     PL_FILES      => {},
@@ -23,8 +23,6 @@ my %params = (
     test => {
         TESTS => 't/*.t t/strategy/*.t',
     }
-
-
 );
 
 if ($ExtUtils::MakeMaker::VERSION >= 6.3002) {
@@ -37,4 +35,3 @@ sub MY::postamble {
 }
 
 WriteMakefile(%params);
-
