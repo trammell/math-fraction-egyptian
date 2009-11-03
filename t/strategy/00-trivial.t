@@ -4,10 +4,10 @@ use warnings;
 use Test::More 'no_plan';
 use Test::Exception;
 
-use_ok('Math::Fraction::Egyptian::trivial');
+use_ok('Math::Fraction::Egyptian::Trivial');
 
 local *trivial = sub {
-    Math::Fraction::Egyptian::trivial->expand($_[0],$_[1]);
+    Math::Fraction::Egyptian::Trivial->expand($_[0],$_[1]);
 };
 
 # 1/9 expands trivially to 0/1 + 1/9
