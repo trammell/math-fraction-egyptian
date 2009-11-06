@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use base 'Exporter';
 use List::Util qw(first reduce max);
 
-our @EXPORT_OK = qw( decompose GCD simplify primes );
+our @EXPORT_OK = qw( decompose GCD is_practical simplify primes );
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 my %PRIMES = map { $_ => undef } primes();
 

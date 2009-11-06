@@ -9,4 +9,5 @@ local *practical = sub {
 };
 
 is_deeply([practical(2,9)], [0,1,6,18], "2/9 => 0/1 + 1/6 + 1/18");
+warn "@{[ practical(2,13) ]}\n";
 
