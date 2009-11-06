@@ -13,6 +13,8 @@ sub dispatch_ahmet {
     my ($n, $d) = @_;
     my @egypt;
 
+    die 'in dispatch_ahmet()';
+
     if ($n == 2) {
         if ($d == 3) {
             return s_small_prime($n,$d);
