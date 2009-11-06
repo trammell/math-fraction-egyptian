@@ -2,12 +2,38 @@ package Math::Fraction::Egyptian::Practical;
 
 use strict;
 use warnings FATAL => 'all';
-use List::Util qw(first max reduce);
-use Math::Fraction::Egyptian::Utils 'primes';
+use List::Util qw/ first max /;
+use Math::Fraction::Egyptian::Utils qw/ is_practical /;
 
-my $PRACTICAL = {};
+=pod
 
-=head2 $class->expand($n,$d)
+=head1 NAME
+
+Math::Fraction::Egyptian::Practical - Egyptian fractions via practical numbers
+
+=head1 SYNOPSIS
+
+    use Math::Fraction::Egyptian::Practical;
+    my @e = Math::Fraction::Egyptian::Practical->expand(2,13);
+
+=head1 DESCRIPTION
+
+Ahmes uses the following expansion of 2/13 using the property of 8 * 13
+being a practical number:
+
+    (2/13) * (8/8) = 16/104
+                   = (13 + 2 + 1)/104
+                   = 1/8 + 1/52 + 1/104
+
+When a solution with a smaller practical number exists:
+
+    (2/13) * (6/6) = 12/78
+                   = (6 + 3 + 2 + 1)/78
+                   = 1/13 + 1/26 + 1/39 + 1/78
+
+=head1 METHODS
+
+=head2 $class->expand($numer,$denom)
 
 Attempts to find an integer multiplier C<$M> such that the scaled
 denominator C<$M * $d> is a practical number.  This lets us decompose the
@@ -23,106 +49,87 @@ scaled numerator C<$M * $numer> as in this example:
         4/18 = 3/18 + 1/18
              = 1/6 + 1/18
 
-By definition, all numbers N < P, where P is practical, can be represented
-as a sum of distinct divisors of P.
+By definition, all numbers N < P, where P is practical, can be represented as
+a sum of distinct divisors of P.
 
 =cut
 
 sub expand {
     my ($class,$n,$d) = @_;
 
-    # look for a multiple of $d that is a practical number
-    my $M = first { is_practical($_ * $d) } 1 .. $d;
-    die "unsuitable strategy" unless $M;
+    # find the first integer $m that meets these criteria:
+    #   => $d * $m is a practical number
+    #   => $n * $m is greater than $d
+    my $m = first { is_practical($_ * $d) and ($_ * $n > $d) } 1 .. $d;
+    die "unsuitable strategy" unless $m;
 
-    $n *= $M;
-    $d *= $M;
-
-    my @divisors = grep { $d % $_ == 0 } 1 .. $d;
-
-    my @N;
-    my %seen;
-    while ($n) {
-        @divisors = grep { $_ <= $n } @divisors;
-        my $x = max @divisors;
-        push @N, $x;
-        $n -= $x;
-        @divisors = grep { $_ < $x } @divisors;
-    }
-    my @e = map { $d / $_ } @N;
-    return (0, 1, @e);
+    # break the numerator up into summands
+    my @s = $class->summands($n * $m, $d * $m);
+    return (0, 1, map { $d * $m / $_ } @s);
 }
 
-=head2 is_practical($n)
+=head2 $class->summands($numer,$denom)
 
-Returns a true value if C<$n> is a practical number.
+
 
 =cut
 
-sub is_practical {
-    my $n = shift;
-    unless (exists $PRACTICAL->{$n}) {
-        $PRACTICAL->{$n} = _is_practical($n);
+sub summands {
+    my ($class,$num,$den) = @_;
+    my @summands;
+    my @divisors = reverse grep { $den % $_ == 0 } 1 .. $den;
+    while ($num > 0) {
+        my $div = shift @divisors;
+        next if $div > $num;
+        push @summands, $div;
+        $num -= $div;
     }
-    return $PRACTICAL->{$n};
-}
-
-sub _is_practical {
-    my $n = shift;
-    return 1 if $n == 1;        # edge case
-    return 0 if $n % 2 == 1;    # no odd practicals except 1
-    my @pf = prime_factors($n);
-    foreach my $i (1 .. $#pf) {
-        my $p = $pf[$i][0];
-        return 0 if ($p > 1 + sigma( @pf[0 .. $i-1]));
-    }
-    return 1;
+    return @summands;
 }
 
 
-=head2 prime_factors($n)
 
-Returns the prime factors of C<$n> as a list of (prime,multiplicity) pairs.
-The list is sorted by increasing prime number.
 
-Example:
 
-    my @pf = prime_factors(120);    # 120 = 2 * 2 * 2 * 3 * 5
-    # @pf = ([2,3],[3,1],[5,1])
-
-=cut
-
-sub prime_factors {
-    my $n = shift;
-    my @primes = primes();
-    my %pf;
-    for my $i (0 .. $#primes) {
-        my $p = $primes[$i];
-        while ($n % $p == 0) {
-            $pf{$p}++;
-            $n /= $p;
-        }
-        last if $n == 1;
-    }
-    return unless $n == 1;
-    return map { [ $_, $pf{$_} ] } sort { $a <=> $b } keys %pf;
-}
-
-=head2 sigma(@pairs)
-
-Helper function for determining whether a number is "practical" or not.
-
-=cut
-
-sub sigma {
-    # see http://en.wikipedia.org/wiki/Divisor_function
-    my @pairs = @_;
-    my $term = sub {
-        my ($p,$a) = @_;
-        return (($p ** ($a + 1)) - 1) / ($p - 1);
-    };
-    return reduce { $a * $b } map { $term->(@$_) } @pairs;
-}
+#sub expand {
+#    my ($class,$N,$D) = @_;
+#
+#    # find multiples of $d that are practical numbers
+#    my @mult = grep { is_practical($_ * $D) } 1 .. $D;
+#
+#    warn ">>> @mult";
+#    die "unsuitable strategy" unless @mult;
+#
+#    MULTIPLE:
+#    for my $M (@mult) {
+#        my $n = $N * $M;
+#        my $d = $D * $M;
+#
+#        # find the divisors of $d
+#        my @div = grep { $d % $_ == 0 } 1 .. $d;
+#
+#        # expand $n into a sum of divisors of $d
+#        my @N;
+#        while ($n) {
+#            next MULTIPLE unless @N;
+#            @div = grep { $_ <= $n } @div;
+#            my $x = max @div;
+#            push @N, $x;
+#            $n -= $x;
+#            @div = grep { $_ < $x } @div;
+#        }
+#        my @e = map { $d / $_ } @N;
+#
+#        next MULTIPLE if $e[0] != $M;
+#        next MULTIPLE if grep { $d % $_ } @e[1 .. $#e]; # FIXME
+#
+## o
+##    4. As an observation a1, ..., ai were always divisors of the
+##       denominator a of the first partition 1/a
+#
+#        return (0, 1, @e);
+#    }
+#    die "unsuitable strategy";
+#}
 
 1;
-
