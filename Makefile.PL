@@ -19,7 +19,7 @@ my %params = (
         SUFFIX => 'gz',
     },
     clean => {
-        FILES => [ 'cover_db', 'Math-Fraction-Egyptian-*', '*.bak' ],
+        FILES => [ qw/ cover_db Debian_* Math-Fraction-Egyptian-* *.bak / ],
     },
     test => {
         TESTS => 't/*.t t/strategy/*.t',
