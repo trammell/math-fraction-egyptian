@@ -6,7 +6,7 @@ use base 'Exporter';
 use Math::Fraction::Egyptian::Utils 'simplify';
 
 our $VERSION     = '0.01';
-our @EXPORT_OK   = qw( to_egyptian to_common );
+our @EXPORT_OK   = qw/ to_egyptian to_common /;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 =pod
@@ -64,7 +64,7 @@ Converts fraction C<$numer/$denom> to its Egyptian representation.
 
 Example:
 
-    my @egypt = to_egyptian(5,9);   # convert 5/9 to 1/2 + 1/18
+    my @egypt = to_egyptian(5,9);   # converts 5/9 to 1/2 + 1/18
     print "@egypt";                 # prints "2 18"
 
 =cut
@@ -74,16 +74,19 @@ sub to_egyptian {
     ($n,$d) = (abs(int($n)), abs(int($d)));
     $attr{dispatch} ||= \&mfe_dispatch;
 
-    # oh come on
-    if ($d == 0) { die "can't convert $n/$d"; }
+    # handle 1/0 gracefully
+    if ($d == 0) {
+        die "can't convert $n/$d";
+    }
 
-    # handle improper fractions
+    # handle improper fractions gracefully
     if ($n >= $d) {
         $_ = $n % $d;
         warn "$n/$d is an improper fraction; expanding $_/$d instead";
         $n = $_;
     }
 
+    # attempt to convert the fraction
     my @egypt;
     while ($n && $n != 0) {
         ($n, $d, my @e) = $attr{dispatch}->($n,$d);
