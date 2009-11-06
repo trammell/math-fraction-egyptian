@@ -1,20 +1,20 @@
-package Math::Fraction::Egyptian::SmallPrime;
+package Math::Fraction::Egyptian::Prime;
 
 use strict;
 use warnings FATAL => 'all';
 use Math::Fraction::Egyptian::Utils 'primes';
 
-my %PRIMES = map { $_ => 1 } grep { $_ < 35 } primes();
+my %PRIMES = map { $_ => 1 } primes();
 
 =head1 NAME
 
-Math::Fraction::Egyptian::SmallPrime - construct Egyptian representations
-of fractions
+Math::Fraction::Egyptian::Prime - construct Egyptian representations of
+fractions with prime denominators
 
 =head1 SYNOPSIS
 
-    use Math::Fraction::Egyptian::SmallPrime;
-    @e = Math::Fraction::Egyptian::SmallPrime->expand(13,21);
+    use Math::Fraction::Egyptian::Prime;
+    @e = Math::Fraction::Egyptian::Prime->expand(13,23);
 
 =head2 $class->expand($n,$d)
 
