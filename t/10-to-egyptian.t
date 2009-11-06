@@ -14,7 +14,8 @@ is_deeply([ to_egyptian(1,3) ], [3], '1/3 => (3)');
 is_deeply([ to_egyptian(1,4) ], [4], '1/4 => (4)');
 
 # 43/48 => 1/2 + 1/3 + 1/16
-is_deeply([ to_egyptian(43,48) ], [2,3,16], '43/48 => (2,3,16)');
+is_deeply([ to_egyptian(43,48) ], [2,3,16], '43/48 => (2,3,16)')
+    or diag("to_egyptian(43,48) => [@{[ to_egyptian(43,48) ]}]");
 
 # test input that is an improper fraction
 {
