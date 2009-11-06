@@ -13,9 +13,15 @@ is_deeply([ to_egyptian(0,4) ], [], '0/4 => ()');
 is_deeply([ to_egyptian(1,3) ], [3], '1/3 => (3)');
 is_deeply([ to_egyptian(1,4) ], [4], '1/4 => (4)');
 
-# 43/48 => 1/2 + 1/3 + 1/16
+# test examples in POD:
+#   * 43/48 => 1/2 + 1/3 + 1/16
+#   * 5/9 = 1/2 + 1/18
+
 is_deeply([ to_egyptian(43,48) ], [2,3,16], '43/48 => (2,3,16)')
     or diag("to_egyptian(43,48) => [@{[ to_egyptian(43,48) ]}]");
+
+is_deeply([ to_egyptian(5,9) ], [2,18], '5/9 => (2,18)')
+    or diag("to_egyptian(5,9) => [@{[ to_egyptian(5,9) ]}]");
 
 # test input that is an improper fraction
 {
