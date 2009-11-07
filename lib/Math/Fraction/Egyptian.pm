@@ -101,7 +101,7 @@ Default strategy dispatcher for function C<to_egyptian>.  The following
 strategies are attempted, in this order:
 
     Trivial
-    SmallPrime
+    Prime
     Practical
     Greedy
 
@@ -116,7 +116,7 @@ sub mfe_dispatch {
     # construct a list of strategy classes to apply
     my @strategies = map "Math::Fraction::Egyptian::$_", qw(
         Trivial
-        SmallPrime
+        Prime
         Practical
         Greedy
     );
@@ -178,7 +178,7 @@ fractions to Egyptian fractions:
 
 =item Math::Fraction::Egyptian::Composite
 
-=item Math::Fraction::Egyptian::SmallPrime
+=item Math::Fraction::Egyptian::Prime
 
 =back
 

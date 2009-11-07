@@ -7,7 +7,7 @@ require 't/rhind.pl';
 # construct a list of strategy classes to apply
 my @strategies = map "Math::Fraction::Egyptian::$_", qw/
     Trivial
-    SmallPrime
+    Prime
     Composite
     Practical
     Greedy
@@ -23,9 +23,6 @@ for my $s (@strategies) {
 sub ahmet {
     my ($numer, $denom) = @_;
     my @egypt;
-
-    if ($denom <
-
 
     STRATEGY:
     for my $s (@strategies) {
@@ -45,18 +42,14 @@ sub ahmet {
 sub apply_strategies {
     my ($n,$d,@strategies) = @_;
     STRATEGY:
-    for my $s (@strategies) {
-        my @result = eval { $s->expand($numer,$denom); };
+    foreach my $s (@strategies) {
+        my @result = eval { $s->expand($n,$d); };
         if ($@) {
             next STRATEGY if $@ =~ /unsuitable strategy/;
             die $@;
         }
-        my ($n, $d, @e) = @result;
-        ($numer,$denom) = ($n,$d);
-        push @egypt, @e;
-        last STRATEGY;
+        return @result;
     }
-    return ($numer, $denom, @egypt);
 }
 
 my %to_do = map { $_, 1 } qw/
