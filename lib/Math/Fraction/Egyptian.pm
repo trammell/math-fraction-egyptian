@@ -32,29 +32,28 @@ An Egyptian fraction is the sum of distinct unit fractions, such as
     1/2 + 1/3 + 1/16
 
 That is, each fraction in the expression has a numerator equal to 1 and a
-denominator that is a positive integer, and all the denominators differ
-from each other. The sum of an expression of this type is a positive
-rational number C<a/b>; for instance the Egyptian fraction above sums to
-C<43/48>.
+denominator that is a positive integer, and all the denominators differ from
+each other. The sum of an expression of this type is a positive rational
+number C<a/b>; for instance the Egyptian fraction above sums to C<43/48>.
 
 Every positive rational number can be represented by an Egyptian fraction.
 Sums of this type, and similar sums also including C<2/3> and C<3/4> as
-summands, were used as a serious notation for rational numbers by the
-ancient Egyptians, and continued to be used by other civilizations into
-medieval times.
+summands, were used as a serious notation for rational numbers by the ancient
+Egyptians, and continued to be used by other civilizations into medieval
+times.
 
 In modern mathematical notation, Egyptian fractions have been superseded by
 vulgar fractions (see e.g. L<http://en.wikipedia.org/wiki/Vulgar_fraction>)
-and decimal notation.  However, Egyptian fractions continue to be an object
-of study in modern number theory and recreational mathematics, as well as
-in modern historical studies of ancient mathematics.
+and decimal notation.  However, Egyptian fractions continue to be an object of
+study in modern number theory and recreational mathematics, as well as in
+modern historical studies of ancient mathematics.
 
 =back
 
 A common fraction has an infinite number of different Egyptian fraction
-representations.  This package implements a selection of conversion
-strategies for conversion of common fractions to Egyptian form; see section
-L<STRATEGIES> below for details.
+representations.  This package implements a selection of conversion strategies
+for conversion of common fractions to Egyptian form; see section L<STRATEGIES>
+below for details.
 
 =head1 FUNCTIONS
 
@@ -114,12 +113,8 @@ sub mfe_dispatch {
     my @egypt;
 
     # construct a list of strategy classes to apply
-    my @strategies = map "Math::Fraction::Egyptian::$_", qw(
-        Trivial
-        Prime
-        Practical
-        Greedy
-    );
+    my @strategies = map "Math::Fraction::Egyptian::$_",
+        qw/ Trivial Prime Practical Greedy /;
 
     STRATEGY:
     for my $s (@strategies) {
@@ -174,11 +169,11 @@ fractions to Egyptian fractions:
 
 =item L<Math::Fraction::Egyptian::Practical>
 
-=item Math::Fraction::Egyptian::StrictPractical
+=item L<Math::Fraction::Egyptian::StrictPractical>
 
-=item Math::Fraction::Egyptian::Composite
+=item L<Math::Fraction::Egyptian::Composite>
 
-=item Math::Fraction::Egyptian::Prime
+=item L<Math::Fraction::Egyptian::Prime>
 
 =back
 
@@ -196,18 +191,16 @@ C<I<$class>-E<gt>>expand($numerator,$denominator)>.
 =item *
 
 The return value from a successful strategy call is the list C<($numerator,
-$denominator, @egyptian)>: the new numerator, the new denominator, and
-zero or more new Egyptian factors extracted from the input fraction.
+$denominator, @egyptian)>: the new numerator, the new denominator, and zero or
+more new Egyptian factors extracted from the input fraction.
 
 =item *
 
-Some strategies are not applicable to all inputs.  If the strategy
-determines that it cannot determine the next number in the expansion, it
-throws an exception (via C<die()>) to indicate the strategy is unsuitable.
+Some strategies are not applicable to all inputs.  If the strategy determines
+that it cannot determine the next number in the expansion, it throws an
+exception (via C<die()>) to indicate the strategy is unsuitable.
 
 =back
-
-
 
 
 Fibonacci, in his Liber Abaci, identifies seven different methods for
@@ -308,11 +301,11 @@ John Trammell, C<< <johntrammell <at> gmail <dot> com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<<
-bug-math-fraction-egyptian at rt.cpan.org >>, or through the web interface
-at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Math-Fraction-Egyptian>.
-I will be notified, and then you'll automatically be notified of progress
-on your bug as I make changes.
+Please report any bugs or feature requests to C<< bug-math-fraction-egyptian
+at rt.cpan.org >>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Math-Fraction-Egyptian>.  I
+will be notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
 
 =head1 SUPPORT
 
@@ -367,6 +360,8 @@ L<http://search.cpan.org/dist/Math-Fraction-Egyptian/>
 =item L<http://mathworld.wolfram.com/RhindPapyrus.html>
 
 =item L<http://liberabaci.blogspot.com/>
+
+=item L<http://rmprectotable.blogspot.com/>
 
 =back
 
