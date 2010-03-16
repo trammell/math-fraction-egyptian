@@ -2,6 +2,8 @@ package Math::Fraction::Egyptian::Practical;
 
 use strict;
 use warnings FATAL => 'all';
+use parent 'Math::Fraction::Egyptian::Strategy';
+
 use List::Util qw/ first max /;
 use Math::Fraction::Egyptian::Utils qw/ is_practical /;
 

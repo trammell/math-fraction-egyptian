@@ -2,6 +2,7 @@ package Math::Fraction::Egyptian::Trivial;
 
 use strict;
 use warnings FATAL => 'all';
+use parent 'Math::Fraction::Egyptian::Strategy';
 
 our $VERSION = '0.01';
 

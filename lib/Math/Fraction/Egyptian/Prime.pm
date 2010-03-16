@@ -2,6 +2,8 @@ package Math::Fraction::Egyptian::Prime;
 
 use strict;
 use warnings FATAL => 'all';
+use parent 'Math::Fraction::Egyptian::Strategy';
+
 use Math::Fraction::Egyptian::Utils 'primes';
 
 my %PRIMES = map { $_ => 1 } primes();
