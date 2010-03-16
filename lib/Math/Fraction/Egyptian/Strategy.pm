@@ -1,5 +1,9 @@
+package Math::Fraction::Egyptian::Strategy;
 
-=pod
+use strict;
+use warnings FATAL => 'all';
+
+1;
 
 =head1 NAME
 
