@@ -4,8 +4,8 @@ use File::Spec;
 use Test::More;
 use English qw(-no_match_vars);
 
-if (not $ENV{APP_WAR_AUTHOR}) {
-    my $msg = 'Author test.  Set $ENV{APP_WAR_AUTHOR} to "1" to run.';
+if (not $ENV{MFE_AUTHOR}) {
+    my $msg = 'Author test.  Set $ENV{MFE_AUTHOR} to "1" to run.';
     plan(skip_all => $msg);
 }
 

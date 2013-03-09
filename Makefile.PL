@@ -23,12 +23,9 @@ my %params = (
     },
     test => {
         TESTS => 't/*.t t/strategy/*.t',
-    }
+    },
+    LICENSE => 'perl',
 );
-
-if ($ExtUtils::MakeMaker::VERSION >= 6.3002) {
-    $params{LICENSE} = 'perl';
-}
 
 # add coverage to makefile
 sub MY::postamble {

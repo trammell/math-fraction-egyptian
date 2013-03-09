@@ -51,9 +51,9 @@ modern historical studies of ancient mathematics.
 =back
 
 A common fraction has an infinite number of different Egyptian fraction
-representations.  This package implements a selection of conversion strategies
-for conversion of common fractions to Egyptian form; see section L<STRATEGIES>
-below for details.
+representations.  This package implements a selection of conversion
+strategies for conversion of common fractions to Egyptian form; see section
+L<STRATEGIES> below for details.
 
 =head1 FUNCTIONS
 
